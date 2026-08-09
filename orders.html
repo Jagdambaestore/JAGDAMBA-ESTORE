@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Jagdamba E-Store - Orders</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    JAGDAMBA <span>ORDERS</span>
+  </div>
+
+  <nav>
+    <a href="admin.html">Admin</a>
+    <a href="index.html">Store</a>
+    <button id="logout" class="cart-btn">Logout</button>
+  </nav>
+</header>
+
+<main class="section">
+
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">ORDER MANAGEMENT</p>
+      <h2>Customer Orders</h2>
+    </div>
+
+    <button id="refresh" class="primary">↻ Refresh</button>
+  </div>
+
+  <div id="message"></div>
+
+  <div id="orders" class="grid"></div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="orders.js"></script>
+
+</body>
+</html>
