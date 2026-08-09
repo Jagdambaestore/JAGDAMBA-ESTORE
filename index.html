@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jagdamba E-Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">JAGDAMBA <span>E-STORE</span></div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#shop">Shop</a>
+    <a href="#offers">Offers</a>
+    <a href="admin.html">Admin</a>
+    <button id="cartBtn" class="cart-btn">Cart <b id="cartCount">0</b></button>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="hero">
+  <div>
+    <p class="eyebrow">WELCOME TO JAGDAMBA E-STORE</p>
+    <h1>Shop smart.<br>Order easy.</h1>
+    <p>Electronics & Accessories, Men's Fashion, Sports & Fitness and more.</p>
+    <a class="primary" href="#shop">Shop Now</a>
+  </div>
+</section>
+
+<section class="features">
+  <div>🚚 <b>Delivery</b><small>All India delivery</small></div>
+  <div>💵 <b>COD</b><small>Cash on Delivery</small></div>
+  <div>🔒 <b>Secure</b><small>Safe checkout</small></div>
+  <div>📦 <b>Tracking</b><small>Track your order</small></div>
+</section>
+
+<section id="shop" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">OUR PRODUCTS</p>
+      <h2>Shop Products</h2>
+    </div>
+    <input id="search" class="search" placeholder="Search products...">
+  </div>
+  <div id="categories" class="chips"></div>
+  <div id="products" class="grid"></div>
+  <p id="empty" class="empty hidden">No products found.</p>
+</section>
+
+<section id="offers" class="offer">
+  <div>
+    <p class="eyebrow">SPECIAL OFFER</p>
+    <h2>Great products. Great deals.</h2>
+    <p>Check the store regularly for new products and offers.</p>
+  </div>
+</section>
+</main>
+
+<div id="cartPanel" class="drawer">
+  <div class="drawer-head"><h2>Your Cart</h2><button id="closeCart">×</button></div>
+  <div id="cartItems"></div>
+  <div class="cart-total">Total: ₹<span id="cartTotal">0.00</span></div>
+  <button id="checkoutBtn" class="primary full">Checkout</button>
+</div>
+<div id="overlay" class="overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
