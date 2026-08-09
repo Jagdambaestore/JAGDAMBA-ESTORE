@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Jagdamba E-Store - UPI Payment</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #172033;
+    }
+
+    .header {
+      background: #172033;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 35px auto;
+      padding: 20px;
+    }
+
+    .payment-box {
+      background: white;
+      border-radius: 18px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .qr {
+      width: 300px;
+      max-width: 100%;
+      margin: 20px auto;
+      display: block;
+    }
+
+    .upi-box {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    .pay-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #172033;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .copy-button {
+      padding: 10px 18px;
+      border: 1px solid #172033;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .cod {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>JAGDAMBA E-STORE</h1>
+    <div>Secure UPI Payment</div>
+  </div>
+
+  <div class="container">
+
+    <div class="payment-box">
+
+      <h2>📱 Pay Online</h2>
+
+      <p>
+        Google Pay / PhonePe / Paytm / किसी भी UPI App से
+        QR Code Scan करके payment करें।
+      </p>
+
+      <!-- YOUR UPI QR CODE -->
+      <img
+        class="qr"
+        src="Jagdamba_Estore_UPI_QR.png"
+        alt="Jagdamba E-Store UPI QR Code"
+      >
+
+      <div class="upi-box">
+        anshul88266@okhdfcbank
+      </div>
+
+      <button
+        class="copy-button"
+        onclick="copyUPI()">
+        📋 Copy UPI ID
+      </button>
+
+      <a
+        class="pay-button"
+        href="upi://pay?pa=anshul88266@okhdfcbank&pn=JAGDAMBA%20E-STORE&cu=INR">
+        📲 Pay Using UPI App
+      </a>
+
+      <div class="note">
+        Payment करने के बाद अपना order confirmation
+        website पर पूरा करें।
+      </div>
+
+      <div class="cod">
+        💵 COD भी Available है
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function copyUPI() {
+
+      const upi = "anshul88266@okhdfcbank";
+
+      navigator.clipboard.writeText(upi)
+        .then(function() {
+
+          alert("UPI ID copied successfully!");
+
+        })
+        .catch(function() {
+
+          alert("UPI ID: " + upi);
+
+        });
+
+    }
+
+  </script>
+
+</body>
+</html>
