@@ -1,1 +1,403 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Track Your Order - Jagdamba E-Store</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #111827;
+      color: white;
+      padding: 18px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .box {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 25px;
+    }
+
+    .order-info {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      padding: 13px;
+      border-radius: 10px;
+      background: #e5e7eb;
+    }
+
+    .step.active {
+      background: #111827;
+      color: white;
+      font-weight: bold;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .success {
+      color: #166534;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>JAGDAMBA E-STORE</h1>
+  <div>Track Your Order</div>
+</div>
+
+<div class="container">
+
+  <div class="box">
+
+    <h2>📦 Track Order</h2>
+
+    <p>
+      अपना Order Number डालें।
+    </p>
+
+    <input
+      id="orderNumber"
+      type="text"
+      placeholder="Example: JDS-12345678"
+    >
+
+    <button id="trackBtn">
+      TRACK ORDER
+    </button>
+
+    <div id="result"></div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+  "https://vffjurnwzkfjttjvbire.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_7IJpU2ggKrHiV_jO7ED-eg_jngoiBSU";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const statuses = [
+  "New",
+  "Confirmed",
+  "Packed",
+  "Shipped",
+  "Out for Delivery",
+  "Delivered"
+];
+
+function escapeHtml(value) {
+
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    function(m) {
+
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[m];
+
+    }
+  );
+
+}
+
+function money(value) {
+
+  return Number(value || 0).toLocaleString(
+    "en-IN",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }
+  );
+
+}
+
+document
+  .getElementById("trackBtn")
+  .addEventListener("click", trackOrder);
+
+async function trackOrder() {
+
+  const orderNumber =
+    document
+      .getElementById("orderNumber")
+      .value
+      .trim();
+
+  const result =
+    document.getElementById("result");
+
+  if (!orderNumber) {
+
+    result.innerHTML =
+      `<p class="error">
+        Please enter your Order Number.
+      </p>`;
+
+    return;
+  }
+
+  result.innerHTML =
+    `<p>Order checking...</p>`;
+
+  const { data, error } = await db
+
+    .from("orders")
+
+    .select(`
+      id,
+      order_number,
+      customer_name,
+      payment_method,
+      payment_status,
+      order_status,
+      subtotal,
+      delivery_charge,
+      total_amount,
+      created_at,
+
+      order_items (
+        product_name,
+        quantity,
+        price,
+        product_price,
+        total
+      )
+    `)
+
+    .eq("order_number", orderNumber)
+
+    .maybeSingle();
+
+  if (error) {
+
+    console.error(error);
+
+    result.innerHTML =
+      `<p class="error">
+        Order tracking error: ${escapeHtml(error.message)}
+      </p>`;
+
+    return;
+  }
+
+  if (!data) {
+
+    result.innerHTML =
+      `<p class="error">
+        Order Number not found.
+      </p>`;
+
+    return;
+  }
+
+  const currentStatus =
+    data.order_status || "New";
+
+  const currentIndex =
+    statuses.indexOf(currentStatus);
+
+  const timeline =
+    statuses.map((status, index) => {
+
+      const active =
+        index <= currentIndex &&
+        currentStatus !== "Cancelled";
+
+      return `
+        <div class="step ${active ? "active" : ""}">
+          ${active ? "✓ " : ""}${escapeHtml(status)}
+        </div>
+      `;
+
+    }).join("");
+
+  const items =
+    (data.order_items || [])
+      .map(item => {
+
+        const price =
+          item.price ??
+          item.product_price ??
+          0;
+
+        return `
+          <div class="item">
+
+            <span>
+              ${escapeHtml(item.product_name)}
+              × ${item.quantity || 1}
+            </span>
+
+            <b>
+              ₹${money(
+                item.total ??
+                price * (item.quantity || 1)
+              )}
+            </b>
+
+          </div>
+        `;
+
+      }).join("");
+
+  result.innerHTML = `
+
+    <div class="order-info">
+
+      <h3>
+        Order #${escapeHtml(data.order_number)}
+      </h3>
+
+      <p>
+        <b>Order Date:</b>
+        ${new Date(data.created_at)
+          .toLocaleString("en-IN")}
+      </p>
+
+      <p>
+        <b>Payment:</b>
+        ${escapeHtml(data.payment_method || "COD")}
+      </p>
+
+      <p>
+        <b>Payment Status:</b>
+        ${escapeHtml(data.payment_status || "Pending")}
+      </p>
+
+      <div class="status">
+        Current Status:
+        ${escapeHtml(currentStatus)}
+      </div>
+
+    </div>
+
+    <h3>Order Tracking</h3>
+
+    <div class="timeline">
+      ${timeline}
+    </div>
+
+    <h3>Products</h3>
+
+    ${items}
+
+    <hr>
+
+    <p>
+      <b>Subtotal:</b>
+      ₹${money(data.subtotal)}
+    </p>
+
+    <p>
+      <b>Delivery:</b>
+      ₹${money(data.delivery_charge)}
+    </p>
+
+    <p style="font-size:20px">
+      <b>Total:</b>
+      ₹${money(data.total_amount)}
+    </p>
+
+  `;
+
+}
+
+</script>
+
+</body>
+</html>
