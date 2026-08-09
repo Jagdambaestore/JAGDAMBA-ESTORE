@@ -21,13 +21,13 @@
     .header {
       background: #172033;
       color: white;
-      padding: 18px;
+      padding: 20px;
       text-align: center;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 25px;
     }
 
     .container {
@@ -41,18 +41,24 @@
       border-radius: 18px;
       padding: 25px;
       text-align: center;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+      box-shadow: 0 8px 30px rgba(0,0,0,.10);
     }
 
-    h2 {
-      margin-top: 0;
-    }
-
-    .qr {
+    .qr-box {
       width: 300px;
-      max-width: 100%;
+      height: 300px;
       margin: 20px auto;
-      display: block;
+      padding: 10px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #qrcode img {
+      width: 270px;
+      height: 270px;
     }
 
     .upi-box {
@@ -60,47 +66,56 @@
       border-radius: 10px;
       padding: 15px;
       margin: 20px 0;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: bold;
       word-break: break-all;
     }
 
+    button,
     .pay-button {
-      display: block;
       width: 100%;
       padding: 15px;
-      border: none;
+      border: 0;
       border-radius: 10px;
-      background: #172033;
-      color: white;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      text-decoration: none;
-      margin-top: 15px;
     }
 
     .copy-button {
-      padding: 10px 18px;
-      border: 1px solid #172033;
-      border-radius: 8px;
       background: white;
-      cursor: pointer;
-      font-weight: bold;
+      border: 1px solid #172033;
+      margin-bottom: 12px;
     }
 
-    .note {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
-      line-height: 1.5;
+    .pay-button {
+      display: block;
+      background: #172033;
+      color: white;
+      text-decoration: none;
+      padding: 15px 0;
     }
 
     .cod {
       margin-top: 25px;
       padding: 15px;
-      border-radius: 10px;
       background: #f8fafc;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      color: #172033;
+      text-decoration: none;
       font-weight: bold;
     }
   </style>
@@ -110,26 +125,24 @@
 
   <div class="header">
     <h1>JAGDAMBA E-STORE</h1>
-    <div>Secure UPI Payment</div>
+    <div>Google Pay / UPI Payment</div>
   </div>
 
   <div class="container">
 
     <div class="payment-box">
 
-      <h2>📱 Pay Online</h2>
+      <h2>📱 Scan & Pay</h2>
 
       <p>
-        Google Pay / PhonePe / Paytm / किसी भी UPI App से
-        QR Code Scan करके payment करें।
+        Google Pay, PhonePe, Paytm या किसी भी UPI App
+        से QR Code scan करें।
       </p>
 
-      <!-- YOUR UPI QR CODE -->
-      <img
-        class="qr"
-        src="Jagdamba_Estore_UPI_QR.png"
-        alt="Jagdamba E-Store UPI QR Code"
-      >
+      <!-- QR CODE -->
+      <div class="qr-box">
+        <div id="qrcode"></div>
+      </div>
 
       <div class="upi-box">
         anshul88266@okhdfcbank
@@ -138,29 +151,53 @@
       <button
         class="copy-button"
         onclick="copyUPI()">
-        📋 Copy UPI ID
+        📋 COPY UPI ID
       </button>
 
       <a
         class="pay-button"
         href="upi://pay?pa=anshul88266@okhdfcbank&pn=JAGDAMBA%20E-STORE&cu=INR">
-        📲 Pay Using UPI App
+        📲 PAY USING UPI APP
       </a>
 
       <div class="note">
         Payment करने के बाद अपना order confirmation
-        website पर पूरा करें।
+        पूरा करें।
       </div>
 
       <div class="cod">
-        💵 COD भी Available है
+        💵 Cash on Delivery भी Available है
       </div>
+
+      <a
+        class="back"
+        href="index.html">
+        ← Back to Store
+      </a>
 
     </div>
 
   </div>
 
+  <!-- QR CODE LIBRARY -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <script>
+
+    const upiLink =
+      "upi://pay?pa=anshul88266@okhdfcbank" +
+      "&pn=JAGDAMBA%20E-STORE" +
+      "&cu=INR";
+
+    new QRCode(
+      document.getElementById("qrcode"),
+      {
+        text: upiLink,
+        width: 270,
+        height: 270,
+        correctLevel: QRCode.CorrectLevel.M
+      }
+    );
 
     function copyUPI() {
 
