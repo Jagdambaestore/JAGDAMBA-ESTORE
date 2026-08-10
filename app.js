@@ -92,11 +92,39 @@ function addToCart(id){
 
   }
 
-  renderCart();
-  openCart();
+function addToCart(id){
+  const p = products.find(x => Number(x.id) === Number(id));
 
+  if(!p){
+    alert("Product not found.");
+    return;
+  }
+
+  const stock = Number(p.stock || 0);
+  const row = cart.find(x => Number(x.id) === Number(id));
+
+  if(stock <= 0){
+    alert("This product is out of stock.");
+    return;
+  }
+
+  if(row){
+    if(row.qty >= stock){
+      alert(`Available stock only ${stock}.`);
+      return;
+    }
+    row.qty++;
+  }else{
+    cart.push({
+      ...p,
+      qty: 1
+    });
+  }
+
+  renderCart();
 }
-function changeQty(id,delta){
+  
+  function changeQty(id,delta){
  const row=cart.find(x=>x.id===id);if(!row)return;
  const next=row.qty+delta,stock=Number(row.stock||0);
  if(next<1){removeItem(id);return} if(next>stock){alert(`Available stock only ${stock}.`);return}
