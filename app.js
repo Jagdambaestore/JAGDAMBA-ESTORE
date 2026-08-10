@@ -120,7 +120,6 @@ function addToCart(id){
       qty: 1
     });
   }
-
   renderCart();
 }
   
