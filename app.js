@@ -38,12 +38,14 @@ async function loadData(){
     renderProducts();
 
   } catch(error) {
-    console.error(error);
-    alert("Shop loading error: " + error.message);
-  }
+  console.error(error);
+  alert("Shop loading error: " + error.message);
+}
+
 }
 
 function renderCategories(){
+
   $("categories").innerHTML =
     `<button class="chip ${!selectedCategory?'active':''}" onclick="filterCategory(null)">All</button>` +
     categories.map(c =>
