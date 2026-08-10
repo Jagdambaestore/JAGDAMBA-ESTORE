@@ -144,6 +144,7 @@ function addToCart(id){
 
   renderCart();
 }
+ 
   function changeQty(id,delta){
  const row=cart.find(x=>x.id===id);if(!row)return;
  const next=row.qty+delta,stock=Number(row.stock||0);
