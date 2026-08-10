@@ -58,11 +58,43 @@ function renderProducts(){
 $("search").addEventListener("input",renderProducts);
 
 function addToCart(id){
- const p=products.find(x=>x.id===id);if(!p)return;
- const stock=Number(p.stock||0),row=cart.find(x=>x.id===id);
- if(row){if(row.qty>=stock){alert(`Available stock only ${stock}.`);return;}row.qty++;}
- else{if(stock<=0){alert("This product is out of stock.");return;}cart.push({...p,qty:1});}
- renderCart();openCart();
+
+  const p = products.find(x => Number(x.id) === Number(id));
+
+  if(!p){
+    alert("Product not found.");
+    return;
+  }
+
+  const stock = Number(p.stock || 0);
+  const row = cart.find(x => Number(x.id) === Number(id));
+
+  if(stock <= 0){
+    alert("This product is out of stock.");
+    return;
+  }
+
+  if(row){
+
+    if(row.qty >= stock){
+      alert(`Available stock only ${stock}.`);
+      return;
+    }
+
+    row.qty++;
+
+  }else{
+
+    cart.push({
+      ...p,
+      qty: 1
+    });
+
+  }
+
+  renderCart();
+  openCart();
+
 }
 function changeQty(id,delta){
  const row=cart.find(x=>x.id===id);if(!row)return;
