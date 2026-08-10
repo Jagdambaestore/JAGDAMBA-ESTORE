@@ -7,13 +7,40 @@ const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
 
 async function loadData(){
- const [p,c]=await Promise.all([
-  db.from("products").select("*").eq("is_active",true).order("created_at",{ascending:false}),
-  db.from("categories").select("*").order("name")
- ]);
- if(p.error){console.error(p.error);alert("Products load nahi ho pa rahe.");return;}
- products=p.data||[];categories=c.data||[];renderCategories();renderProducts();
-}
+  try {
+    const [p,c] = await Promise.all([
+      db.from("products")
+        .select("*")
+        .eq("is_active",true)
+        .order("created_at",{ascending:false}),
+
+      db.from("categories")
+        .select("*")
+        .order("name")
+    ]);
+
+    if(p.error){
+      console.error(p.error);
+      alert("Products load nahi ho pa rahe: " + p.error.message);
+      return;
+    }
+
+    if(c.error){
+      console.error(c.error);
+      alert("Categories load nahi ho pa rahi: " + c.error.message);
+      return;
+    }
+
+    products = p.data || [];
+    categories = c.data || [];
+
+    renderCategories();
+    renderProducts();
+
+  } catch(error) {
+    console.error(error);
+    alert("Shop loading error: " + error.message);
+  }
 function renderCategories(){
  $("categories").innerHTML=`<button class="chip ${!selectedCategory?'active':''}" onclick="filterCategory(null)">All</button>`+
  categories.map(c=>`<button class="chip ${selectedCategory===c.id?'active':''}" onclick="filterCategory(${c.id})">${esc(c.name)}</button>`).join("");
