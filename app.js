@@ -41,58 +41,76 @@ async function loadData(){
     console.error(error);
     alert("Shop loading error: " + error.message);
   }
+}
+
 function renderCategories(){
- $("categories").innerHTML=`<button class="chip ${!selectedCategory?'active':''}" onclick="filterCategory(null)">All</button>`+
- categories.map(c=>`<button class="chip ${selectedCategory===c.id?'active':''}" onclick="filterCategory(${c.id})">${esc(c.name)}</button>`).join("");
+  $("categories").innerHTML =
+    `<button class="chip ${!selectedCategory?'active':''}" onclick="filterCategory(null)">All</button>` +
+    categories.map(c =>
+      `<button class="chip ${selectedCategory===c.id?'active':''}" onclick="filterCategory(${c.id})">${esc(c.name)}</button>`
+    ).join("");
 }
-function filterCategory(id){selectedCategory=id;renderCategories();renderProducts();}
+
+function filterCategory(id){
+  selectedCategory = id;
+  renderCategories();
+  renderProducts();
+}
+
 function renderProducts(){
- const q=$("search").value.toLowerCase().trim();
- const list=products.filter(p=>(!selectedCategory||p.category_id===selectedCategory)&&(!q||p.name.toLowerCase().includes(q)||(p.description||"").toLowerCase().includes(q)));
- $("empty").classList.toggle("hidden",list.length!==0);
- $("products").innerHTML=list.map(p=>{
-  const price=p.discount_price??p.price,stock=Number(p.stock||0);
-  return `<article class="card"><img src="${safeUrl(p.image_url)}" alt="${esc(p.name)}" onerror="this.src='https://placehold.co/600x600?text=Product'"><div class="card-body"><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||"")}</div><div class="price">₹${money(price)} ${p.discount_price!=null?`<span class="old">₹${money(p.price)}</span>`:""}</div><small>Delivery: ₹${money(p.delivery_charge)}</small><br><small>${stock>0?`Stock: ${stock}`:"Out of stock"}</small><br><br><button ${stock<=0?"disabled":""} onclick="addToCart(${p.id})">${stock>0?"Add to Cart":"Out of Stock"}</button></div></article>`;
- }).join("");
+  const q = $("search").value.toLowerCase().trim();
+
+  const list = products.filter(p =>
+    (!selectedCategory || p.category_id === selectedCategory) &&
+    (!q ||
+      p.name.toLowerCase().includes(q) ||
+      (p.description || "").toLowerCase().includes(q)
+    )
+  );
+
+  $("empty").classList.toggle("hidden",list.length !== 0);
+
+  $("products").innerHTML = list.map(p => {
+    const price = p.discount_price ?? p.price;
+    const stock = Number(p.stock || 0);
+
+    return `<article class="card">
+      <img src="${safeUrl(p.image_url)}"
+           alt="${esc(p.name)}"
+           onerror="this.src='https://placehold.co/600x600?text=Product'">
+
+      <div class="card-body">
+        <h3>${esc(p.name)}</h3>
+
+        <div class="desc">${esc(p.description || "")}</div>
+
+        <div class="price">
+          ₹${money(price)}
+          ${p.discount_price != null ? `₹${money(p.price)}` : ""}
+        </div>
+
+        <small>Delivery: ₹${money(p.delivery_charge)}</small>
+        <br>
+
+        <small>
+          ${stock > 0 ? `Stock: ${stock}` : "Out of stock"}
+        </small>
+
+        <br><br>
+
+        <button
+          ${stock <= 0 ? "disabled" : ""}
+          onclick="addToCart(${p.id})">
+          ${stock > 0 ? "Add to Cart" : "Out of Stock"}
+        </button>
+      </div>
+    </article>`;
+  }).join("");
 }
+
 $("search").addEventListener("input",renderProducts);
 
 function addToCart(id){
-
-  const p = products.find(x => Number(x.id) === Number(id));
-
-  if(!p){
-    alert("Product not found.");
-    return;
-  }
-
-  const stock = Number(p.stock || 0);
-  const row = cart.find(x => Number(x.id) === Number(id));
-
-  if(stock <= 0){
-    alert("This product is out of stock.");
-    return;
-  }
-
-  if(row){
-
-    if(row.qty >= stock){
-      alert(`Available stock only ${stock}.`);
-      return;
-    }
-
-    row.qty++;
-
-  }else{
-
-    cart.push({
-      ...p,
-      qty: 1
-    });
-
-  }
-
-function addToCart(id){
   const p = products.find(x => Number(x.id) === Number(id));
 
   if(!p){
@@ -113,6 +131,7 @@ function addToCart(id){
       alert(`Available stock only ${stock}.`);
       return;
     }
+
     row.qty++;
   }else{
     cart.push({
@@ -122,7 +141,7 @@ function addToCart(id){
   }
 
   renderCart();
-}  
+}
   function changeQty(id,delta){
  const row=cart.find(x=>x.id===id);if(!row)return;
  const next=row.qty+delta,stock=Number(row.stock||0);
