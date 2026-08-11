@@ -390,10 +390,9 @@ function openCheckout(){
     });
  });
 
- };
+     };
 
- document.getElementById("closeCheckout").onclick=()=>old.remove();
- document.getElementById("placeOrder").onclick=placeOrder;
+  document.getElementById("placeOrder").onclick=placeOrder;
 }
 
 async function placeOrder(){
