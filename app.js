@@ -406,8 +406,22 @@ async function placeOrder(){
  $("doneOrder").onclick=()=>modal.remove();
 }
 
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function safeUrl(u){return u&&/^https?:\/\//i.test(u)?u:"https://placehold.co/600x600?text=Product"}
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[m]));
+}
+
+function safeUrl(u){
+  return u && /^https?:\/\//i.test(u)
+    ? u
+    : "https://placehold.co/600x600?text=Product";
+}
+
 function openCart(){
   const panel = document.getElementById("cartPanel");
   const overlay = document.getElementById("overlay");
