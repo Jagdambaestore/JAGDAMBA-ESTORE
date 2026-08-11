@@ -388,10 +388,10 @@ function openCheckout(){
     .catch(()=>{
       alert("UPI ID: anshul88266@okhdfcbank");
     });
+ });
 
  };
 
-}
  document.getElementById("closeCheckout").onclick=()=>old.remove();
  document.getElementById("placeOrder").onclick=placeOrder;
 }
