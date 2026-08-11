@@ -390,7 +390,6 @@ function openCheckout(){
 };
 
 document.getElementById("placeOrder").onclick=placeOrder;
-}
 
 async function placeOrder(){
  const name=$("coName").value.trim(),mobile=$("coMobile").value.trim(),address=$("coAddress").value.trim(),city=$("coCity").value.trim(),state=$("coState").value.trim(),pincode=$("coPincode").value.trim(),msg=$("checkoutMsg");
