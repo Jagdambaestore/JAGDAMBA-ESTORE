@@ -413,4 +413,7 @@ async function placeOrder(){
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function safeUrl(u){return u&&/^https?:\/\//i.test(u)?u:"https://placehold.co/600x600?text=Product"}
-loadData();renderCart();
+document.addEventListener("DOMContentLoaded", function(){
+  loadData();
+  renderCart();
+});
