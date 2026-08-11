@@ -5,26 +5,26 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let products=[], categories=[], cart=[], selectedCategory=null;
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-async function loadData(){
+async function loadData() {
   try {
-    const [p,c] = await Promise.all([
+    const [p, c] = await Promise.all([
       db.from("products")
         .select("*")
-        .eq("is_active",true)
-        .order("created_at",{ascending:false}),
+        .eq("is_active", true)
+        .order("created_at", { ascending: false }),
 
       db.from("categories")
         .select("*")
         .order("name")
     ]);
 
-    if(p.error){
+    if (p.error) {
       console.error(p.error);
       alert("Products load nahi ho pa rahe: " + p.error.message);
       return;
     }
 
-    if(c.error){
+    if (c.error) {
       console.error(c.error);
       alert("Categories load nahi ho pa rahi: " + c.error.message);
       return;
@@ -36,18 +36,12 @@ async function loadData(){
     renderCategories();
     renderProducts();
 
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     alert("Shop loading error: " + error.message);
   }
 }
 
-catch(error) {
-  console.error(error);
-  alert("Shop loading error: " + error.message);
-}
-
-}
 
 function renderCategories(){
 
