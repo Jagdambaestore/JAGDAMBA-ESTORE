@@ -109,7 +109,11 @@ function renderProducts(){
   }).join("");
 }
 
-$("search").addEventListener("input",renderProducts);
+ const searchBox = $("search");
+
+if(searchBox){
+  searchBox.addEventListener("input",renderProducts);
+}
 
 function addToCart(id){
   const p = products.find(x => Number(x.id) === Number(id));
