@@ -5,7 +5,6 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let products=[], categories=[], cart=[], selectedCategory=null;
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-
 async function loadData(){
   try {
     const [p,c] = await Promise.all([
@@ -38,6 +37,12 @@ async function loadData(){
     renderProducts();
 
   } catch(error) {
+    console.error(error);
+    alert("Shop loading error: " + error.message);
+  }
+}
+
+catch(error) {
   console.error(error);
   alert("Shop loading error: " + error.message);
 }
