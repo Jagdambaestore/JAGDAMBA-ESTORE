@@ -405,7 +405,6 @@ async function placeOrder(){
  const modal=$("checkoutModal");modal.querySelector("div > div").innerHTML=`<div style="text-align:center;padding:25px"><h2>🎉 Order Placed Successfully</h2><p>Your Order Number</p><h1>${esc(order.order_number)}</h1><p>Payment: <b>Cash on Delivery</b></p><p>Order details admin panel mein save ho gaye hain.</p><button type="button" id="doneOrder" style="padding:12px 22px;border:0;border-radius:10px">Done</button></div>`;
  $("doneOrder").onclick=()=>modal.remove();
 }
-
 function esc(s){
   return String(s ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;",
