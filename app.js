@@ -408,7 +408,12 @@ async function placeOrder(){
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function safeUrl(u){return u&&/^https?:\/\//i.test(u)?u:"https://placehold.co/600x600?text=Product"}
-document.addEventListener("DOMContentLoaded", function(){
-  loadData();
-  renderCart();
+document.getElementById("cartBtn").addEventListener("click", function(){
+  const cartPanel = document.getElementById("cartPanel");
+
+  if(cartPanel){
+    cartPanel.classList.toggle("open");
+  }else{
+    alert("Cart panel not found.");
+  }
 });
