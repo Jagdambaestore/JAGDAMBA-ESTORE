@@ -408,12 +408,52 @@ async function placeOrder(){
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function safeUrl(u){return u&&/^https?:\/\//i.test(u)?u:"https://placehold.co/600x600?text=Product"}
-document.getElementById("cartBtn").addEventListener("click", function(){
-  const cartPanel = document.getElementById("cartPanel");
+function openCart(){
+  const panel = document.getElementById("cartPanel");
+  const overlay = document.getElementById("overlay");
 
-  if(cartPanel){
-    cartPanel.classList.toggle("open");
-  }else{
-    alert("Cart panel not found.");
+  if(panel){
+    panel.classList.add("open");
+    panel.style.right = "0";
   }
+
+  if(overlay){
+    overlay.classList.add("show");
+    overlay.style.display = "block";
+  }
+}
+
+function closeCart(){
+  const panel = document.getElementById("cartPanel");
+  const overlay = document.getElementById("overlay");
+
+  if(panel){
+    panel.classList.remove("open");
+    panel.style.right = "-450px";
+  }
+
+  if(overlay){
+    overlay.classList.remove("show");
+    overlay.style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const cartBtn = document.getElementById("cartBtn");
+  const closeBtn = document.getElementById("closeCart");
+  const overlay = document.getElementById("overlay");
+
+  if(cartBtn){
+    cartBtn.onclick = openCart;
+  }
+
+  if(closeBtn){
+    closeBtn.onclick = closeCart;
+  }
+
+  if(overlay){
+    overlay.onclick = closeCart;
+  }
+
 });
