@@ -456,4 +456,7 @@ document.addEventListener("DOMContentLoaded", function(){
     overlay.onclick = closeCart;
   }
 
+  loadData();
+  renderCart();
+
 });
