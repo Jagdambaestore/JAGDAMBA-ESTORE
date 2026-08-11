@@ -382,17 +382,14 @@ function openCheckout(){
     .writeText("anshul88266@okhdfcbank")
 
     .then(()=>{
-      alert("UPI ID copied successfully!");
-    })
+     alert("UPI ID copied successfully!");
+})
+.catch(()=>{
+  alert("UPI ID: anshul88266@okhdfcbank");
+});
+};
 
-    .catch(()=>{
-      alert("UPI ID: anshul88266@okhdfcbank");
-    });
- });
-
-     };
-
-  document.getElementById("placeOrder").onclick=placeOrder;
+document.getElementById("placeOrder").onclick=placeOrder;
 }
 
 async function placeOrder(){
