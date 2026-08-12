@@ -1,8 +1,238 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jagdamba Admin</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="topbar"><div class="brand">JAGDAMBA <span>ADMIN PANEL</span></div><nav><a href="index.html">Store</a><button id="logout" class="cart-btn">Logout</button></nav></header>
-<main class="section"><div id="loginBox" class="card" style="max-width:480px;margin:auto"><div class="card-body"><p class="eyebrow">SECURE ADMIN</p><h2>Admin Login</h2><input id="email" class="search" style="width:100%;margin:6px 0" type="email" placeholder="Admin email"><input id="password" class="search" style="width:100%;margin:6px 0" type="password" placeholder="Password"><button id="login" class="primary">Login</button><p id="loginMsg"></p></div></div>
-<div id="panel" class="hidden"><div class="section-head"><div><p class="eyebrow">STORE MANAGEMENT</p><h2>Products</h2></div><button id="newProduct" class="primary">+ Add Product</button></div>
-<div id="formBox" class="card hidden" style="margin:25px 0"><div class="card-body"><h3 id="formTitle">Add Product</h3><input id="pid" type="hidden"><input id="pname" class="search" style="width:100%;margin:5px 0" placeholder="Product name"><textarea id="pdesc" class="search" style="width:100%;height:100px;margin:5px 0" placeholder="Description"></textarea>
-<label><b>Product Picture</b></label><input id="pfile" type="file" accept="image/*" style="width:100%;margin:10px 0"><img id="preview" style="display:none;width:150px;height:150px;object-fit:cover;border-radius:12px">
-<select id="pcat" class="search" style="width:100%;margin:10px 0"></select><input id="pprice" class="search" style="width:100%;margin:5px 0" type="number" step="0.01" placeholder="Price"><input id="pdiscount" class="search" style="width:100%;margin:5px 0" type="number" step="0.01" placeholder="Discount price (optional)"><input id="pdelivery" class="search" style="width:100%;margin:5px 0" type="number" step="0.01" value="0" placeholder="Delivery charge"><input id="pstock" class="search" style="width:100%;margin:5px 0" type="number" value="0" placeholder="Stock"><br><br><button id="save" class="primary">Save Product</button> <button id="cancel" class="chip">Cancel</button><p id="msg"></p></div></div><div id="adminProducts" class="grid"></div></div></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="admin.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Jagdamba Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    JAGDAMBA <span>ADMIN PANEL</span>
+  </div>
+
+  <nav>
+    <a href="index.html">Store</a>
+    <button id="logout" class="cart-btn">Logout</button>
+  </nav>
+</header>
+
+<main class="section">
+
+  <!-- LOGIN -->
+  <div id="loginBox" class="card" style="max-width:480px;margin:auto">
+    <div class="card-body">
+
+      <p class="eyebrow">SECURE ADMIN</p>
+      <h2>Admin Login</h2>
+
+      <input
+        id="email"
+        class="search"
+        style="width:100%;margin:6px 0"
+        type="email"
+        placeholder="Admin email"
+      >
+
+      <input
+        id="password"
+        class="search"
+        style="width:100%;margin:6px 0"
+        type="password"
+        placeholder="Password"
+      >
+
+      <button id="login" class="primary">Login</button>
+
+      <p id="loginMsg"></p>
+
+    </div>
+  </div>
+
+
+  <!-- ADMIN PANEL -->
+  <div id="panel" class="hidden">
+
+    <!-- ADMIN NAV -->
+    <div style="
+      display:flex;
+      gap:10px;
+      margin-bottom:25px;
+      flex-wrap:wrap;
+    ">
+
+      <button id="productsTab" class="primary" type="button">
+        🛍️ Products
+      </button>
+
+      <button id="ordersTab" class="chip" type="button">
+        📦 Orders
+      </button>
+
+    </div>
+
+
+    <!-- PRODUCTS SECTION -->
+    <div id="productsSection">
+
+      <div class="section-head">
+
+        <div>
+          <p class="eyebrow">STORE MANAGEMENT</p>
+          <h2>Products</h2>
+        </div>
+
+        <button id="newProduct" class="primary">
+          + Add Product
+        </button>
+
+      </div>
+
+
+      <!-- PRODUCT FORM -->
+      <div id="formBox" class="card hidden" style="margin:25px 0">
+
+        <div class="card-body">
+
+          <h3 id="formTitle">Add Product</h3>
+
+          <input id="pid" type="hidden">
+
+          <input
+            id="pname"
+            class="search"
+            style="width:100%;margin:5px 0"
+            placeholder="Product name"
+          >
+
+          <textarea
+            id="pdesc"
+            class="search"
+            style="width:100%;height:100px;margin:5px 0"
+            placeholder="Description"
+          ></textarea>
+
+          <label>
+            <b>Product Picture</b>
+          </label>
+
+          <input
+            id="pfile"
+            type="file"
+            accept="image/*"
+            style="width:100%;margin:10px 0"
+          >
+
+          <img
+            id="preview"
+            style="
+              display:none;
+              width:150px;
+              height:150px;
+              object-fit:cover;
+              border-radius:12px
+            "
+          >
+
+          <select
+            id="pcat"
+            class="search"
+            style="width:100%;margin:10px 0"
+          ></select>
+
+          <input
+            id="pprice"
+            class="search"
+            style="width:100%;margin:5px 0"
+            type="number"
+            step="0.01"
+            placeholder="Price"
+          >
+
+          <input
+            id="pdiscount"
+            class="search"
+            style="width:100%;margin:5px 0"
+            type="number"
+            step="0.01"
+            placeholder="Discount price (optional)"
+          >
+
+          <input
+            id="pdelivery"
+            class="search"
+            style="width:100%;margin:5px 0"
+            type="number"
+            step="0.01"
+            value="0"
+            placeholder="Delivery charge"
+          >
+
+          <input
+            id="pstock"
+            class="search"
+            style="width:100%;margin:5px 0"
+            type="number"
+            value="0"
+            placeholder="Stock"
+          >
+
+          <br><br>
+
+          <button id="save" class="primary">
+            Save Product
+          </button>
+
+          <button id="cancel" class="chip">
+            Cancel
+          </button>
+
+          <p id="msg"></p>
+
+        </div>
+      </div>
+
+
+      <!-- PRODUCTS -->
+      <div id="adminProducts" class="grid"></div>
+
+    </div>
+
+
+    <!-- ORDERS SECTION -->
+    <div id="ordersSection" class="hidden">
+
+      <div class="section-head">
+
+        <div>
+          <p class="eyebrow">STORE MANAGEMENT</p>
+          <h2>Orders</h2>
+        </div>
+
+        <button id="refreshOrders" class="primary" type="button">
+          ↻ Refresh Orders
+        </button>
+
+      </div>
+
+      <div id="adminOrders"></div>
+
+      <p id="ordersEmpty" class="empty hidden">
+        No orders found.
+      </p>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
