@@ -155,8 +155,10 @@ async function load() {
 
   }
 
+render();
 
-  render();
+  // Load orders also so dashboard counters update automatically
+  await loadOrders();
 
 }
 
@@ -585,55 +587,98 @@ function updateDashboardSummary() {
   const totalOrders = orders.length;
 
   const newOrders =
-    orders.filter(o => o.order_status === "New").length;
+    orders.filter(o =>
+      String(o.order_status || "")
+        .trim()
+        .toLowerCase() === "new"
+    ).length;
 
   const packedOrders =
-    orders.filter(o => o.order_status === "Packed").length;
+    orders.filter(o =>
+      String(o.order_status || "")
+        .trim()
+        .toLowerCase() === "packed"
+    ).length;
 
   const shippedOrders =
-    orders.filter(o => o.order_status === "Shipped").length;
+    orders.filter(o =>
+      String(o.order_status || "")
+        .trim()
+        .toLowerCase() === "shipped"
+    ).length;
 
   const outDeliveryOrders =
-    orders.filter(o => o.order_status === "Out for Delivery").length;
+    orders.filter(o =>
+      String(o.order_status || "")
+        .trim()
+        .toLowerCase() === "out for delivery"
+    ).length;
 
   const deliveredOrders =
-    orders.filter(o => o.order_status === "Delivered").length;
+    orders.filter(o =>
+      String(o.order_status || "")
+        .trim()
+        .toLowerCase() === "delivered"
+    ).length;
 
+  // Cancelled orders ko sales me include nahi karna
   const totalSales =
     orders
-      .filter(o => o.order_status !== "Cancelled")
+      .filter(o =>
+        String(o.order_status || "")
+          .trim()
+          .toLowerCase() !== "cancelled"
+      )
       .reduce(
-        (sum, o) => sum + Number(o.total_amount || 0),
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
         0
       );
 
   const pendingPayments =
-    orders.filter(
-      o => (o.payment_status || "Pending") === "Pending"
+    orders.filter(o =>
+      String(o.payment_status || "Pending")
+        .trim()
+        .toLowerCase() === "pending"
     ).length;
 
 
+  // Dashboard counters
+
   if ($("dashTotalOrders"))
-    $("dashTotalOrders").textContent = totalOrders;
+    $("dashTotalOrders").textContent =
+      totalOrders;
+
 
   if ($("dashNewOrders"))
-    $("dashNewOrders").textContent = newOrders;
+    $("dashNewOrders").textContent =
+      newOrders;
+
 
   if ($("dashPackedOrders"))
-    $("dashPackedOrders").textContent = packedOrders;
+    $("dashPackedOrders").textContent =
+      packedOrders;
+
 
   if ($("dashShippedOrders"))
-    $("dashShippedOrders").textContent = shippedOrders;
+    $("dashShippedOrders").textContent =
+      shippedOrders;
+
 
   if ($("dashOutDeliveryOrders"))
-    $("dashOutDeliveryOrders").textContent = outDeliveryOrders;
+    $("dashOutDeliveryOrders").textContent =
+      outDeliveryOrders;
+
 
   if ($("dashDeliveredOrders"))
-    $("dashDeliveredOrders").textContent = deliveredOrders;
+    $("dashDeliveredOrders").textContent =
+      deliveredOrders;
+
 
   if ($("dashTotalSales"))
     $("dashTotalSales").textContent =
       "₹" + money(totalSales);
+
 
   if ($("dashPendingPayments"))
     $("dashPendingPayments").textContent =
@@ -1119,4 +1164,27 @@ JAGDAMBA E-STORE`;
 
   window.open(url, "_blank");
 };
+// =========================
+// REALTIME ORDER UPDATES
+// =========================
+
+db
+  .channel("admin-orders-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "orders"
+    },
+    async payload => {
+
+      console.log("Order changed:", payload);
+
+      await loadOrders();
+
+    }
+  )
+  .subscribe();
+
 check();
