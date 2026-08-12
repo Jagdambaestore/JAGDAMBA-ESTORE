@@ -576,7 +576,70 @@ function clearForm() {
 /* =========================
    LOAD ORDERS
 ========================= */
+/* =========================
+   DASHBOARD SUMMARY
+========================= */
 
+function updateDashboardSummary() {
+
+  const totalOrders = orders.length;
+
+  const newOrders =
+    orders.filter(o => o.order_status === "New").length;
+
+  const packedOrders =
+    orders.filter(o => o.order_status === "Packed").length;
+
+  const shippedOrders =
+    orders.filter(o => o.order_status === "Shipped").length;
+
+  const outDeliveryOrders =
+    orders.filter(o => o.order_status === "Out for Delivery").length;
+
+  const deliveredOrders =
+    orders.filter(o => o.order_status === "Delivered").length;
+
+  const totalSales =
+    orders
+      .filter(o => o.order_status !== "Cancelled")
+      .reduce(
+        (sum, o) => sum + Number(o.total_amount || 0),
+        0
+      );
+
+  const pendingPayments =
+    orders.filter(
+      o => (o.payment_status || "Pending") === "Pending"
+    ).length;
+
+
+  if ($("dashTotalOrders"))
+    $("dashTotalOrders").textContent = totalOrders;
+
+  if ($("dashNewOrders"))
+    $("dashNewOrders").textContent = newOrders;
+
+  if ($("dashPackedOrders"))
+    $("dashPackedOrders").textContent = packedOrders;
+
+  if ($("dashShippedOrders"))
+    $("dashShippedOrders").textContent = shippedOrders;
+
+  if ($("dashOutDeliveryOrders"))
+    $("dashOutDeliveryOrders").textContent = outDeliveryOrders;
+
+  if ($("dashDeliveredOrders"))
+    $("dashDeliveredOrders").textContent = deliveredOrders;
+
+  if ($("dashTotalSales"))
+    $("dashTotalSales").textContent =
+      "₹" + money(totalSales);
+
+  if ($("dashPendingPayments"))
+    $("dashPendingPayments").textContent =
+      pendingPayments;
+
+}
 async function loadOrders() {
 
   const box =
@@ -617,7 +680,7 @@ async function loadOrders() {
 
 
   orders = data || [];
-
+updateDashboardSummary();
 
   if (!orders.length) {
 
