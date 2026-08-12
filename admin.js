@@ -751,6 +751,14 @@ async function loadOrders() {
     <option value="Confirmed" ${order.order_status === "Confirmed" ? "selected" : ""}>
       Confirmed
     </option>
+    
+<option value="Packed" ${order.order_status === "Packed" ? "selected" : ""}>
+  Packed
+</option>
+
+<option value="Out for Delivery" ${order.order_status === "Out for Delivery" ? "selected" : ""}>
+  Out for Delivery
+</option>
 
     <option value="Shipped" ${order.order_status === "Shipped" ? "selected" : ""}>
       Shipped
@@ -785,20 +793,20 @@ async function loadOrders() {
 </div>
 
 
-          <p>
-            <b>Order Date:</b>
-            ${formatDate(order.created_at)}
-          </p>
+         <p>
+  <b>Order Date:</b>
+  ${formatDate(order.created_at)}
+</p>
 
 
-          <button
-            class="primary"
-            type="button"
-            onclick="viewOrder(${order.id})"
-          >
-            View Order Items
-          </button>
 
+<button
+  class="primary"
+  type="button"
+  onclick="viewOrder(${order.id})"
+>
+  View Order Items
+</button>
         </div>
 
       </article>
@@ -806,6 +814,10 @@ async function loadOrders() {
     `).join("");
 
 }
+/* =========================
+   WHATSAPP CUSTOMER
+========================= */
+
 
 
 /* =========================
