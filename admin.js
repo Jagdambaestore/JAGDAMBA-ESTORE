@@ -703,10 +703,35 @@ async function loadOrders() {
           </p>
 
 
-          <p>
-            <b>Payment Status:</b>
-            ${esc(order.payment_status || "-")}
-          </p>
+          <div style="margin:12px 0">
+
+  <b>Payment Status:</b>
+
+  <select
+    class="search"
+    style="width:100%;margin-top:6px"
+    onchange="updatePaymentStatus(${order.id}, this.value)"
+  >
+
+    <option value="Pending" ${order.payment_status === "Pending" ? "selected" : ""}>
+      Pending
+    </option>
+
+    <option value="Paid" ${order.payment_status === "Paid" ? "selected" : ""}>
+      Paid
+    </option>
+
+    <option value="Failed" ${order.payment_status === "Failed" ? "selected" : ""}>
+      Failed
+    </option>
+
+    <option value="Refunded" ${order.payment_status === "Refunded" ? "selected" : ""}>
+      Refunded
+    </option>
+
+  </select>
+
+</div>
 
 
          <div style="margin:12px 0">
@@ -951,5 +976,23 @@ window.updateOrderStatus = async function(orderId, status) {
 
   await loadOrders();
 
+};
+window.updatePaymentStatus = async function(orderId, status) {
+
+  const { error } = await db
+    .from("orders")
+    .update({
+      payment_status: status
+    })
+    .eq("id", orderId);
+
+  if (error) {
+    alert("Payment status update nahi hua: " + error.message);
+    return;
+  }
+
+  alert("Payment status updated: " + status);
+
+  await loadOrders();
 };
 check();
