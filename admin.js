@@ -765,7 +765,23 @@ async function loadOrders() {
     </option>
 
   </select>
+<div style="margin:15px 0">
 
+  <button
+    type="button"
+    class="primary"
+    onclick="openWhatsApp(
+      '${esc(order.customer_mobile)}',
+      '${esc(order.customer_name)}',
+      '${esc(order.order_number)}',
+      '${esc(order.order_status || "New")}'
+    )"
+    style="width:100%;"
+  >
+    📱 WhatsApp Customer
+  </button>
+
+</div>
 </div>
 
 
@@ -994,5 +1010,38 @@ window.updatePaymentStatus = async function(orderId, status) {
   alert("Payment status updated: " + status);
 
   await loadOrders();
+};
+window.openWhatsApp = function(mobile, customerName, orderNumber, orderStatus) {
+
+  let phone = String(mobile || "").replace(/\D/g, "");
+
+  if (phone.length === 10) {
+    phone = "91" + phone;
+  }
+
+  if (phone.length < 12) {
+    alert("Customer mobile number valid nahi hai.");
+    return;
+  }
+
+  const message =
+`Hello ${customerName},
+
+Jagdamba E-Store se aapke order ka update:
+
+📦 Order Number: ${orderNumber}
+📌 Order Status: ${orderStatus}
+
+Aapke order ke liye dhanyavaad. 🙏
+
+JAGDAMBA E-STORE`;
+
+  const url =
+    "https://wa.me/" +
+    phone +
+    "?text=" +
+    encodeURIComponent(message);
+
+  window.open(url, "_blank");
 };
 check();
