@@ -1,8 +1,902 @@
-const SUPABASE_URL="https://vffjurnwzkfjttjvbire.supabase.co";const SUPABASE_ANON_KEY="sb_publishable_7IJpU2ggKrHiV_jO7ED-eg_jngoiBSU";const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);let cats=[],products=[],editing=null;const $=id=>document.getElementById(id);const money=n=>Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-async function check(){const{data:{session}}=await db.auth.getSession();if(session)show(session.user)}$("login").onclick=async()=>{loginMsg.textContent="Logging in...";const{data,error}=await db.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error){loginMsg.textContent=error.message;return}show(data.user)};async function show(u){const{data,error}=await db.from("admins").select("id").eq("id",u.id).maybeSingle();if(error||!data){await db.auth.signOut();loginMsg.textContent="This account is not an admin.";return}loginBox.classList.add("hidden");panel.classList.remove("hidden");load()}logout.onclick=async()=>{await db.auth.signOut();location.reload()};
-async function load(){const[c,p]=await Promise.all([db.from("categories").select("*").order("name"),db.from("products").select("*").order("created_at",{ascending:false})]);if(c.error||p.error){alert((c.error||p.error).message);return}cats=c.data||[];products=p.data||[];pcat.innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");render()}
-function render(){adminProducts.innerHTML=products.map(p=>`<article class="card"><img src="${url(p.image_url)}" style="width:100%;height:220px;object-fit:cover"><div class="card-body"><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||"")}</div><div class="price">₹${money(p.discount_price??p.price)}</div><small>Delivery ₹${money(p.delivery_charge)} · Stock ${p.stock}</small><br><br><button onclick="editProduct(${p.id})">Edit</button> <button onclick="deleteProduct(${p.id})">Delete</button></div></article>`).join("")}
-newProduct.onclick=()=>{editing=null;clearForm();formTitle.textContent="Add Product";formBox.classList.remove("hidden")};cancel.onclick=()=>formBox.classList.add("hidden");pfile.onchange=()=>{let f=pfile.files[0];if(f){preview.src=URL.createObjectURL(f);preview.style.display="block"}};
-async function upload(f){let ext=(f.name.split(".").pop()||"jpg").toLowerCase(),path=`${crypto.randomUUID()}.${ext}`;let{error}=await db.storage.from("product-images").upload(path,f,{upsert:false,contentType:f.type});if(error)throw error;return db.storage.from("product-images").getPublicUrl(path).data.publicUrl}
-save.onclick=async()=>{msg.textContent="Saving...";try{let old=editing?products.find(x=>x.id===editing):null,f=pfile.files[0],image=old?.image_url||null;if(f){if(f.size>5*1024*1024)throw Error("Image 5 MB se chhoti honi chahiye.");image=await upload(f)}let payload={name:pname.value.trim(),description:pdesc.value.trim(),image_url:image,category_id:Number(pcat.value)||null,price:Number(pprice.value||0),discount_price:pdiscount.value===""?null:Number(pdiscount.value),delivery_charge:Number(pdelivery.value||0),stock:Number(pstock.value||0),is_active:true,updated_at:new Date().toISOString()};if(!payload.name||payload.price<0)throw Error("Name and valid price required.");let q=editing?db.from("products").update(payload).eq("id",editing):db.from("products").insert(payload);let{error}=await q;if(error)throw error;formBox.classList.add("hidden");await load()}catch(e){msg.textContent=e.message||"Upload failed."}};
-window.editProduct=id=>{let p=products.find(x=>x.id===id);editing=id;formTitle.textContent="Edit Product";pname.value=p.name;pdesc.value=p.description||"";pcat.value=p.category_id||"";pprice.value=p.price;pdiscount.value=p.discount_price??"";pdelivery.value=p.delivery_charge;pstock.value=p.stock;pfile.value="";preview.style.display=p.image_url?"block":"none";if(p.image_url)preview.src=p.image_url;formBox.classList.remove("hidden")};window.deleteProduct=async id=>{if(!confirm("Delete this product?"))return;let{error}=await db.from("products").delete().eq("id",id);if(error)alert(error.message);else load()};function clearForm(){pname.value=pdesc.value=pprice.value=pdiscount.value="";pfile.value="";preview.style.display="none";pdelivery.value=0;pstock.value=0}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}function url(u){return u&&/^https?:\/\//i.test(u)?u:"https://placehold.co/600x600?text=Product"}check();
+const SUPABASE_URL = "https://vffjurnwzkfjttjvbire.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_7IJpU2ggKrHiV_jO7ED-eg_jngoiBSU";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let cats = [];
+let products = [];
+let orders = [];
+let editing = null;
+
+const $ = id => document.getElementById(id);
+
+const money = n =>
+  Number(n || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+
+/* =========================
+   ADMIN LOGIN
+========================= */
+
+async function check() {
+  const {
+    data: { session }
+  } = await db.auth.getSession();
+
+  if (session) {
+    show(session.user);
+  }
+}
+
+
+if ($("login")) {
+  $("login").onclick = async () => {
+
+    $("loginMsg").textContent = "Logging in...";
+
+    const { data, error } =
+      await db.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+
+    if (error) {
+      $("loginMsg").textContent = error.message;
+      return;
+    }
+
+    show(data.user);
+  };
+}
+
+
+/* =========================
+   SHOW ADMIN PANEL
+========================= */
+
+async function show(user) {
+
+  const { data, error } =
+    await db
+      .from("admins")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+  if (error || !data) {
+
+    await db.auth.signOut();
+
+    $("loginMsg").textContent =
+      "This account is not an admin.";
+
+    return;
+  }
+
+  $("loginBox").classList.add("hidden");
+  $("panel").classList.remove("hidden");
+
+  await load();
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+if ($("logout")) {
+
+  $("logout").onclick = async () => {
+
+    await db.auth.signOut();
+
+    location.reload();
+
+  };
+
+}
+
+
+/* =========================
+   LOAD PRODUCTS + CATEGORIES
+========================= */
+
+async function load() {
+
+  const [c, p] = await Promise.all([
+
+    db
+      .from("categories")
+      .select("*")
+      .order("name"),
+
+    db
+      .from("products")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      })
+
+  ]);
+
+
+  if (c.error) {
+    alert("Categories: " + c.error.message);
+    return;
+  }
+
+  if (p.error) {
+    alert("Products: " + p.error.message);
+    return;
+  }
+
+
+  cats = c.data || [];
+  products = p.data || [];
+
+
+  if ($("pcat")) {
+
+    $("pcat").innerHTML = cats
+      .map(c =>
+        `<option value="${c.id}">
+          ${esc(c.name)}
+        </option>`
+      )
+      .join("");
+
+  }
+
+
+  render();
+
+}
+
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
+function render() {
+
+  if (!$("adminProducts")) return;
+
+
+  $("adminProducts").innerHTML =
+    products.map(p => `
+
+      <article class="card">
+
+        <img
+          src="${url(p.image_url)}"
+          style="
+            width:100%;
+            height:220px;
+            object-fit:cover;
+          "
+        >
+
+        <div class="card-body">
+
+          <h3>${esc(p.name)}</h3>
+
+          <div class="desc">
+            ${esc(p.description || "")}
+          </div>
+
+          <div class="price">
+            ₹${money(p.discount_price ?? p.price)}
+          </div>
+
+          <small>
+            Delivery ₹${money(p.delivery_charge)}
+            · Stock ${p.stock}
+          </small>
+
+          <br><br>
+
+          <button onclick="editProduct(${p.id})">
+            Edit
+          </button>
+
+          <button onclick="deleteProduct(${p.id})">
+            Delete
+          </button>
+
+        </div>
+
+      </article>
+
+    `).join("");
+
+}
+
+
+/* =========================
+   ADD PRODUCT
+========================= */
+
+if ($("newProduct")) {
+
+  $("newProduct").onclick = () => {
+
+    editing = null;
+
+    clearForm();
+
+    $("formTitle").textContent =
+      "Add Product";
+
+    $("formBox").classList.remove("hidden");
+
+  };
+
+}
+
+
+/* =========================
+   CANCEL PRODUCT
+========================= */
+
+if ($("cancel")) {
+
+  $("cancel").onclick = () => {
+
+    $("formBox").classList.add("hidden");
+
+  };
+
+}
+
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+if ($("pfile")) {
+
+  $("pfile").onchange = () => {
+
+    const f = $("pfile").files[0];
+
+    if (f) {
+
+      $("preview").src =
+        URL.createObjectURL(f);
+
+      $("preview").style.display =
+        "block";
+
+    }
+
+  };
+
+}
+
+
+/* =========================
+   UPLOAD IMAGE
+========================= */
+
+async function upload(file) {
+
+  const ext =
+    (file.name.split(".").pop() || "jpg")
+      .toLowerCase();
+
+  const path =
+    `${crypto.randomUUID()}.${ext}`;
+
+
+  const { error } =
+    await db.storage
+      .from("product-images")
+      .upload(
+        path,
+        file,
+        {
+          upsert: false,
+          contentType: file.type
+        }
+      );
+
+
+  if (error) throw error;
+
+
+  return db.storage
+    .from("product-images")
+    .getPublicUrl(path)
+    .data
+    .publicUrl;
+
+}
+
+
+/* =========================
+   SAVE PRODUCT
+========================= */
+
+if ($("save")) {
+
+  $("save").onclick = async () => {
+
+    $("msg").textContent =
+      "Saving...";
+
+
+    try {
+
+      const old =
+        editing
+          ? products.find(x => x.id === editing)
+          : null;
+
+
+      const file =
+        $("pfile").files[0];
+
+
+      let image =
+        old?.image_url || null;
+
+
+      if (file) {
+
+        if (file.size > 5 * 1024 * 1024) {
+
+          throw new Error(
+            "Image 5 MB se chhoti honi chahiye."
+          );
+
+        }
+
+        image = await upload(file);
+
+      }
+
+
+      const payload = {
+
+        name: $("pname").value.trim(),
+
+        description:
+          $("pdesc").value.trim(),
+
+        image_url: image,
+
+        category_id:
+          Number($("pcat").value) || null,
+
+        price:
+          Number($("pprice").value || 0),
+
+        discount_price:
+          $("pdiscount").value === ""
+            ? null
+            : Number($("pdiscount").value),
+
+        delivery_charge:
+          Number($("pdelivery").value || 0),
+
+        stock:
+          Number($("pstock").value || 0),
+
+        is_active: true,
+
+        updated_at:
+          new Date().toISOString()
+
+      };
+
+
+      if (!payload.name ||
+          payload.price < 0) {
+
+        throw new Error(
+          "Name and valid price required."
+        );
+
+      }
+
+
+      const query =
+        editing
+
+          ? db
+              .from("products")
+              .update(payload)
+              .eq("id", editing)
+
+          : db
+              .from("products")
+              .insert(payload);
+
+
+      const { error } =
+        await query;
+
+
+      if (error) throw error;
+
+
+      $("formBox")
+        .classList
+        .add("hidden");
+
+
+      await load();
+
+
+    } catch (e) {
+
+      $("msg").textContent =
+        e.message ||
+        "Upload failed.";
+
+    }
+
+  };
+
+}
+
+
+/* =========================
+   EDIT PRODUCT
+========================= */
+
+window.editProduct = id => {
+
+  const p =
+    products.find(x => x.id === id);
+
+  if (!p) return;
+
+
+  editing = id;
+
+
+  $("formTitle").textContent =
+    "Edit Product";
+
+
+  $("pname").value =
+    p.name || "";
+
+  $("pdesc").value =
+    p.description || "";
+
+  $("pcat").value =
+    p.category_id || "";
+
+  $("pprice").value =
+    p.price ?? "";
+
+  $("pdiscount").value =
+    p.discount_price ?? "";
+
+  $("pdelivery").value =
+    p.delivery_charge ?? 0;
+
+  $("pstock").value =
+    p.stock ?? 0;
+
+  $("pfile").value = "";
+
+
+  $("preview").style.display =
+    p.image_url
+      ? "block"
+      : "none";
+
+
+  if (p.image_url) {
+
+    $("preview").src =
+      p.image_url;
+
+  }
+
+
+  $("formBox")
+    .classList
+    .remove("hidden");
+
+};
+
+
+/* =========================
+   DELETE PRODUCT
+========================= */
+
+window.deleteProduct = async id => {
+
+  if (!confirm("Delete this product?")) {
+    return;
+  }
+
+
+  const { error } =
+    await db
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
+  await load();
+
+};
+
+
+/* =========================
+   CLEAR PRODUCT FORM
+========================= */
+
+function clearForm() {
+
+  $("pname").value = "";
+
+  $("pdesc").value = "";
+
+  $("pprice").value = "";
+
+  $("pdiscount").value = "";
+
+  $("pfile").value = "";
+
+  $("preview").style.display =
+    "none";
+
+  $("pdelivery").value = 0;
+
+  $("pstock").value = 0;
+
+  $("msg").textContent = "";
+
+}
+
+
+/* =========================
+   LOAD ORDERS
+========================= */
+
+async function loadOrders() {
+
+  const box =
+    $("adminOrders");
+
+
+  if (!box) return;
+
+
+  box.innerHTML =
+    `<p>Loading orders...</p>`;
+
+
+  const { data, error } =
+    await db
+      .from("orders")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    box.innerHTML =
+      `<div class="card">
+        <div class="card-body">
+          <b>Orders load nahi ho rahe.</b>
+          <p>${esc(error.message)}</p>
+        </div>
+      </div>`;
+
+    return;
+
+  }
+
+
+  orders = data || [];
+
+
+  if (!orders.length) {
+
+    box.innerHTML = "";
+
+    $("ordersEmpty")
+      .classList
+      .remove("hidden");
+
+    return;
+
+  }
+
+
+  $("ordersEmpty")
+    .classList
+    .add("hidden");
+
+
+  box.innerHTML =
+    orders.map(order => `
+
+      <article
+        class="card"
+        style="margin-bottom:18px"
+      >
+
+        <div class="card-body">
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:15px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <div>
+
+              <h3>
+                📦 ${esc(order.order_number)}
+              </h3>
+
+              <p>
+                <b>
+                  ${esc(order.customer_name)}
+                </b>
+              </p>
+
+              <p>
+                📱 ${esc(order.customer_mobile)}
+              </p>
+
+            </div>
+
+
+            <div>
+
+              <div class="price">
+                ₹${money(order.total_amount)}
+              </div>
+
+              <small>
+                Payment:
+                ${esc(order.payment_method || "-")}
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <hr>
+
+
+          <p>
+            <b>Address:</b><br>
+            ${esc(order.address || "")},
+            ${esc(order.city || "")},
+            ${esc(order.state || "")}
+            - ${esc(order.pincode || "")}
+          </p>
+
+
+          <p>
+            <b>Payment Status:</b>
+            ${esc(order.payment_status || "-")}
+          </p>
+
+
+          <p>
+            <b>Order Status:</b>
+            ${esc(order.order_status || "-")}
+          </p>
+
+
+          <p>
+            <b>Order Date:</b>
+            ${formatDate(order.created_at)}
+          </p>
+
+
+          <button
+            class="primary"
+            type="button"
+            onclick="viewOrder(${order.id})"
+          >
+            View Order Items
+          </button>
+
+        </div>
+
+      </article>
+
+    `).join("");
+
+}
+
+
+/* =========================
+   VIEW ORDER ITEMS
+========================= */
+
+window.viewOrder = async orderId => {
+
+  const { data, error } =
+    await db
+      .from("order_items")
+      .select("*")
+      .eq("order_id", orderId);
+
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+
+  }
+
+
+  if (!data || !data.length) {
+
+    alert("Order items nahi mile.");
+
+    return;
+
+  }
+
+
+  let text =
+    "ORDER ITEMS\n\n";
+
+
+  data.forEach((item, index) => {
+
+    text +=
+      `${index + 1}. ${item.product_name}\n`;
+
+    text +=
+      `Qty: ${item.quantity}\n`;
+
+    text +=
+      `Price: ₹${money(item.price)}\n`;
+
+    text +=
+      `Total: ₹${money(item.total)}\n\n`;
+
+  });
+
+
+  alert(text);
+
+};
+
+
+/* =========================
+   PRODUCTS / ORDERS TABS
+========================= */
+
+if ($("productsTab")) {
+
+  $("productsTab").onclick = () => {
+
+    $("productsSection")
+      .classList
+      .remove("hidden");
+
+    $("ordersSection")
+      .classList
+      .add("hidden");
+
+  };
+
+}
+
+
+if ($("ordersTab")) {
+
+  $("ordersTab").onclick = async () => {
+
+    $("productsSection")
+      .classList
+      .add("hidden");
+
+    $("ordersSection")
+      .classList
+      .remove("hidden");
+
+    await loadOrders();
+
+  };
+
+}
+
+
+/* =========================
+   REFRESH ORDERS
+========================= */
+
+if ($("refreshOrders")) {
+
+  $("refreshOrders").onclick =
+    loadOrders;
+
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function esc(s) {
+
+  return String(s ?? "")
+    .replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+
+}
+
+
+function url(u) {
+
+  return u &&
+    /^https?:\/\//i.test(u)
+
+    ? u
+
+    : "https://placehold.co/600x600?text=Product";
+
+}
+
+
+function formatDate(value) {
+
+  if (!value) return "-";
+
+  try {
+
+    return new Date(value)
+      .toLocaleString("en-IN");
+
+  } catch {
+
+    return value;
+
+  }
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+check();
