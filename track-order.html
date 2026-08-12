@@ -132,15 +132,21 @@
     <h2>📦 Track Order</h2>
 
     <p>
-      अपना Order Number डालें।
-    </p>
+  अपना Order Number और वही mobile number डालें जो order करते समय दिया था।
+</p>
 
     <input
       id="orderNumber"
       type="text"
       placeholder="Example: JDS-12345678"
     >
-
+<input
+  id="customerMobile"
+  type="tel"
+  inputmode="numeric"
+  maxlength="10"
+  placeholder="Enter your 10-digit mobile number"
+>
     <button id="trackBtn">
       TRACK ORDER
     </button>
@@ -217,19 +223,33 @@ async function trackOrder() {
       .getElementById("orderNumber")
       .value
       .trim();
-
+const customerMobile =
+  document
+    .getElementById("customerMobile")
+    .value
+    .trim();
   const result =
     document.getElementById("result");
 
   if (!orderNumber) {
 
-    result.innerHTML =
-      `<p class="error">
-        Please enter your Order Number.
-      </p>`;
+  result.innerHTML =
+    `<p class="error">
+      Please enter your Order Number.
+    </p>`;
 
-    return;
-  }
+  return;
+}
+
+if (!/^\d{10}$/.test(customerMobile)) {
+
+  result.innerHTML =
+    `<p class="error">
+      Please enter the same valid 10-digit mobile number used while placing the order.
+    </p>`;
+
+  return;
+}
 
   result.innerHTML =
     `<p>Order checking...</p>`;
@@ -260,8 +280,8 @@ async function trackOrder() {
     `)
 
     .eq("order_number", orderNumber)
-
-    .maybeSingle();
+.eq("customer_mobile", customerMobile)
+.maybeSingle();
 
   if (error) {
 
