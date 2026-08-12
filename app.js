@@ -40,12 +40,10 @@ async function loadData() {
 
     const [p, c] = await Promise.all([
 
-      db
-        .from("products")
-        .select("*")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false }),
-
+     db
+  .from("products")
+  .select("*")
+  .eq("is_active", true),
       db
         .from("categories")
         .select("*")
