@@ -709,10 +709,39 @@ async function loadOrders() {
           </p>
 
 
-          <p>
-            <b>Order Status:</b>
-            ${esc(order.order_status || "-")}
-          </p>
+         <div style="margin:12px 0">
+
+  <b>Order Status:</b>
+
+  <select
+    class="search"
+    style="width:100%;margin-top:6px"
+    onchange="updateOrderStatus(${order.id}, this.value)"
+  >
+
+    <option value="New" ${order.order_status === "New" ? "selected" : ""}>
+      New
+    </option>
+
+    <option value="Confirmed" ${order.order_status === "Confirmed" ? "selected" : ""}>
+      Confirmed
+    </option>
+
+    <option value="Shipped" ${order.order_status === "Shipped" ? "selected" : ""}>
+      Shipped
+    </option>
+
+    <option value="Delivered" ${order.order_status === "Delivered" ? "selected" : ""}>
+      Delivered
+    </option>
+
+    <option value="Cancelled" ${order.order_status === "Cancelled" ? "selected" : ""}>
+      Cancelled
+    </option>
+
+  </select>
+
+</div>
 
 
           <p>
@@ -898,5 +927,29 @@ function formatDate(value) {
 /* =========================
    START
 ========================= */
+/* =========================
+   UPDATE ORDER STATUS
+========================= */
 
+window.updateOrderStatus = async function(orderId, status) {
+
+  const { error } = await db
+    .from("orders")
+    .update({
+      order_status: status
+    })
+    .eq("id", orderId);
+
+  if (error) {
+
+    alert("Order status update nahi hua: " + error.message);
+
+    return;
+  }
+
+  alert("Order status updated: " + status);
+
+  await loadOrders();
+
+};
 check();
