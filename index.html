@@ -3,69 +3,512 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jagdamba E-Store</title>
+
+  <meta name="description" content="Jagdamba E-Store - Shop Electronics, Fashion, Sports & Fitness and more.">
+  <meta name="theme-color" content="#6c4cff">
+
+  <title>Jagdamba E-Store | Shop Online</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+<!-- ================= HEADER ================= -->
 <header class="topbar">
-  <div class="brand">JAGDAMBA <span>E-STORE</span></div>
+
+  <div class="brand">
+    <span class="brand-main">JAGDAMBA</span>
+    <span class="brand-sub">E-STORE</span>
+  </div>
+
   <nav>
     <a href="#home">Home</a>
     <a href="#shop">Shop</a>
     <a href="#offers">Offers</a>
+    <a href="#about">About</a>
     <a href="admin.html">Admin</a>
-    <button id="cartBtn" class="cart-btn">Cart <b id="cartCount">0</b></button>
+
+    <button id="cartBtn" class="cart-btn">
+      🛒 Cart
+      <b id="cartCount">0</b>
+    </button>
   </nav>
+
 </header>
 
+
+<!-- ================= MAIN ================= -->
 <main>
-<section id="home" class="hero">
-  <div>
-    <p class="eyebrow">WELCOME TO JAGDAMBA E-STORE</p>
-    <h1>Shop smart.<br>Order easy.</h1>
-    <p>Electronics & Accessories, Men's Fashion, Sports & Fitness and more.</p>
-    <a class="primary" href="#shop">Shop Now</a>
-  </div>
-</section>
 
-<section class="features">
-  <div>🚚 <b>Delivery</b><small>All India delivery</small></div>
-  <div>💵 <b>COD</b><small>Cash on Delivery</small></div>
-  <div>🔒 <b>Secure</b><small>Safe checkout</small></div>
-  <div>📦 <b>Tracking</b><small>Track your order</small></div>
-</section>
+  <!-- HERO -->
+  <section id="home" class="hero">
 
-<section id="shop" class="section">
-  <div class="section-head">
-    <div>
-      <p class="eyebrow">OUR PRODUCTS</p>
-      <h2>Shop Products</h2>
+    <div class="hero-content">
+
+      <div class="hero-badge">
+        ✨ WELCOME TO JAGDAMBA E-STORE
+      </div>
+
+      <h1>
+        Shop Smart.<br>
+        <span>Order Easy.</span>
+      </h1>
+
+      <p>
+        Discover amazing products at great prices.
+        Electronics, Fashion, Sports & Fitness,
+        Mobile Accessories and more.
+      </p>
+
+      <div class="hero-buttons">
+        <a class="primary" href="#shop">
+          🛍️ Shop Now
+        </a>
+
+        <a class="secondary" href="#offers">
+          🔥 View Offers
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <span>✓ COD Available</span>
+        <span>✓ All India Delivery</span>
+        <span>✓ Secure Shopping</span>
+      </div>
+
     </div>
-    <input id="search" class="search" placeholder="Search products...">
-  </div>
-  <div id="categories" class="chips"></div>
-  <div id="products" class="grid"></div>
-  <p id="empty" class="empty hidden">No products found.</p>
-</section>
 
-<section id="offers" class="offer">
-  <div>
-    <p class="eyebrow">SPECIAL OFFER</p>
-    <h2>Great products. Great deals.</h2>
-    <p>Check the store regularly for new products and offers.</p>
-  </div>
-</section>
+    <div class="hero-visual">
+
+      <div class="hero-card">
+
+        <div class="hero-card-icon">
+          🛍️
+        </div>
+
+        <h3>JAGDAMBA</h3>
+
+        <p>E-STORE</p>
+
+        <div class="hero-card-line"></div>
+
+        <small>
+          Shop • Save • Smile
+        </small>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FEATURES ================= -->
+  <section class="features">
+
+    <div class="feature-box">
+      <div class="feature-icon">🚚</div>
+      <div>
+        <b>Fast Delivery</b>
+        <small>All India delivery</small>
+      </div>
+    </div>
+
+    <div class="feature-box">
+      <div class="feature-icon">💵</div>
+      <div>
+        <b>Cash on Delivery</b>
+        <small>Pay when you receive</small>
+      </div>
+    </div>
+
+    <div class="feature-box">
+      <div class="feature-icon">🔒</div>
+      <div>
+        <b>Secure Shopping</b>
+        <small>Safe & secure checkout</small>
+      </div>
+    </div>
+
+    <div class="feature-box">
+      <div class="feature-icon">🎁</div>
+      <div>
+        <b>Special Offers</b>
+        <small>Great deals every day</small>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ================= CATEGORIES ================= -->
+  <section class="category-section">
+
+    <div class="section-heading">
+
+      <div>
+        <p class="eyebrow">SHOP BY CATEGORY</p>
+        <h2>Explore Categories</h2>
+      </div>
+
+    </div>
+
+    <div id="categories" class="category-grid">
+
+      <!-- Categories will be loaded by app.js -->
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= SHOP ================= -->
+  <section id="shop" class="section">
+
+    <div class="section-head">
+
+      <div>
+        <p class="eyebrow">OUR COLLECTION</p>
+
+        <h2>
+          Shop Products
+        </h2>
+
+        <p class="section-subtitle">
+          Find the perfect products for you.
+        </p>
+      </div>
+
+      <div class="search-wrapper">
+
+        <span>🔍</span>
+
+        <input
+          id="search"
+          class="search"
+          type="search"
+          placeholder="Search products..."
+          autocomplete="off"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- Category Filter -->
+    <div id="categoryFilters" class="chips"></div>
+
+    <!-- Products -->
+    <div id="products" class="grid"></div>
+
+    <!-- Empty -->
+    <div id="empty" class="empty hidden">
+
+      <div class="empty-icon">
+        🔍
+      </div>
+
+      <h3>No products found</h3>
+
+      <p>
+        Try searching for another product.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= SPECIAL OFFER ================= -->
+  <section id="offers" class="offer-section">
+
+    <div class="offer-content">
+
+      <div class="offer-label">
+        🔥 SPECIAL OFFER
+      </div>
+
+      <h2>
+        Great Products.<br>
+        Great Deals.
+      </h2>
+
+      <p>
+        Don't miss our latest products and special offers.
+        Shop now and enjoy convenient online shopping.
+      </p>
+
+      <a href="#shop" class="offer-button">
+        Explore Products →
+      </a>
+
+    </div>
+
+    <div class="offer-decoration">
+
+      <div class="offer-circle">
+        %
+      </div>
+
+      <span class="offer-floating one">🎁</span>
+      <span class="offer-floating two">🛍️</span>
+      <span class="offer-floating three">✨</span>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= WHY SHOP WITH US ================= -->
+  <section id="about" class="why-section">
+
+    <div class="section-heading center">
+
+      <p class="eyebrow">WHY JAGDAMBA E-STORE</p>
+
+      <h2>
+        Shopping Made Simple
+      </h2>
+
+      <p>
+        We make online shopping easy, convenient and reliable.
+      </p>
+
+    </div>
+
+
+    <div class="why-grid">
+
+      <div class="why-card">
+
+        <div class="why-icon">
+          💰
+        </div>
+
+        <h3>Great Prices</h3>
+
+        <p>
+          Get quality products at competitive prices.
+        </p>
+
+      </div>
+
+
+      <div class="why-card">
+
+        <div class="why-icon">
+          📦
+        </div>
+
+        <h3>Easy Ordering</h3>
+
+        <p>
+          Simple shopping experience from product to checkout.
+        </p>
+
+      </div>
+
+
+      <div class="why-card">
+
+        <div class="why-icon">
+          🤝
+        </div>
+
+        <h3>Customer First</h3>
+
+        <p>
+          Your satisfaction and shopping experience matter to us.
+        </p>
+
+      </div>
+
+
+      <div class="why-card">
+
+        <div class="why-icon">
+          🚚
+        </div>
+
+        <h3>Delivery Across India</h3>
+
+        <p>
+          Convenient delivery service available across India.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
 </main>
 
+
+<!-- ================= CART DRAWER ================= -->
+
 <div id="cartPanel" class="drawer">
-  <div class="drawer-head"><h2>Your Cart</h2><button id="closeCart">×</button></div>
-  <div id="cartItems"></div>
-  <div class="cart-total">Total: ₹<span id="cartTotal">0.00</span></div>
-  <button id="checkoutBtn" class="primary full">Checkout</button>
+
+  <div class="drawer-head">
+
+    <div>
+      <p class="eyebrow">JAGDAMBA E-STORE</p>
+      <h2>Your Cart</h2>
+    </div>
+
+    <button id="closeCart" aria-label="Close cart">
+      ×
+    </button>
+
+  </div>
+
+
+  <div id="cartItems">
+
+    <!-- Cart items generated by app.js -->
+
+  </div>
+
+
+  <div class="cart-bottom">
+
+    <div class="cart-total">
+
+      <span>Total</span>
+
+      <strong>
+        ₹<span id="cartTotal">0.00</span>
+      </strong>
+
+    </div>
+
+    <button
+      id="checkoutBtn"
+      class="primary full"
+    >
+      Proceed to Checkout →
+    </button>
+
+  </div>
+
 </div>
+
+
+<!-- Overlay -->
 <div id="overlay" class="overlay"></div>
 
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+  <div class="footer-main">
+
+    <div class="footer-brand">
+
+      <div class="brand footer-logo">
+        <span class="brand-main">JAGDAMBA</span>
+        <span class="brand-sub">E-STORE</span>
+      </div>
+
+      <p>
+        Your online destination for electronics,
+        fashion, accessories, sports products and more.
+      </p>
+
+      <div class="social-links">
+
+        <a
+          href="https://www.instagram.com/its_jagdambaestore/"
+          target="_blank"
+          rel="noopener"
+        >
+          📸 Instagram
+        </a>
+
+        <a
+          href="https://wa.me/919205507901"
+          target="_blank"
+          rel="noopener"
+        >
+          💬 WhatsApp
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-column">
+
+      <h4>Quick Links</h4>
+
+      <a href="#home">Home</a>
+      <a href="#shop">Shop</a>
+      <a href="#offers">Offers</a>
+      <a href="#about">About Us</a>
+
+    </div>
+
+
+    <div class="footer-column">
+
+      <h4>Customer Service</h4>
+
+      <a href="#shop">Products</a>
+      <a href="#offers">Special Offers</a>
+      <a href="admin.html">Admin Login</a>
+
+    </div>
+
+
+    <div class="footer-column">
+
+      <h4>Contact Us</h4>
+
+      <p>📱 WhatsApp</p>
+      <a
+        href="https://wa.me/919205507901"
+        target="_blank"
+      >
+        9205507901
+      </a>
+
+      <p>📸 Instagram</p>
+      <a
+        href="https://www.instagram.com/its_jagdambaestore/"
+        target="_blank"
+      >
+        @its_jagdambaestore
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer-bottom">
+
+    <p>
+      © 2026 Jagdamba E-Store. All Rights Reserved.
+    </p>
+
+    <p>
+      Made with ❤️ for our customers
+    </p>
+
+  </div>
+
+</footer>
+
+
+<!-- ================= SCRIPTS ================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="app.js"></script>
+
 </body>
 </html>
