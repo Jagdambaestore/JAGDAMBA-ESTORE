@@ -1833,3 +1833,159 @@ img {
     font-size: 11px;
   }
 }
+/* =========================================================
+   PREMIUM CART UPGRADE
+   ========================================================= */
+
+.drawer {
+  width: 440px !important;
+  max-width: 95vw;
+  background: #ffffff;
+  padding: 24px !important;
+  border-radius: 24px 0 0 24px;
+}
+
+.drawer-head {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ececf2;
+}
+
+.drawer-head h2 {
+  font-size: 24px;
+  font-weight: 900;
+  color: #171a2a;
+}
+
+.drawer-head button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f3f4f8;
+  color: #171a2a;
+  font-size: 24px;
+}
+
+.drawer-head button:hover {
+  background: #eeeaff;
+  color: #6c4cff;
+}
+
+/* Cart item */
+
+.cart-row {
+  display: flex;
+  gap: 13px;
+  padding: 17px 0;
+  border-bottom: 1px solid #eeeeF3;
+}
+
+.cart-row img {
+  width: 72px !important;
+  height: 72px !important;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #f2f3f7;
+  border: 1px solid #eeeef3;
+}
+
+.cart-row strong {
+  display: block;
+  color: #171a2a;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+/* Quantity buttons */
+
+.cart-row button {
+  border: 1px solid #e1e3ea;
+  background: #fff;
+  color: #171a2a;
+  border-radius: 8px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 5px 9px;
+  font-weight: 800;
+  transition: .2s ease;
+}
+
+.cart-row button:hover {
+  border-color: #6c4cff;
+  color: #6c4cff;
+  background: #f5f3ff;
+}
+
+/* Remove button */
+
+.cart-row button:last-child {
+  color: #e5484d;
+  border-color: #f0d5d7;
+}
+
+.cart-row button:last-child:hover {
+  background: #fff2f2;
+  color: #d72e35;
+}
+
+/* Cart total */
+
+.cart-total {
+  margin-top: 12px;
+  padding: 20px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-top: 1px solid #eeeef3;
+
+  color: #171a2a;
+  font-size: 21px;
+  font-weight: 950;
+}
+
+/* Checkout */
+
+.drawer .full {
+  min-height: 52px;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #6c4cff, #8b6cff);
+
+  font-size: 15px;
+  font-weight: 900;
+
+  box-shadow: 0 12px 25px rgba(108,76,255,.20);
+
+  transition: .25s ease;
+}
+
+.drawer .full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(108,76,255,.28);
+}
+
+/* Overlay */
+
+.overlay {
+  background: rgba(15, 17, 28, .58) !important;
+  backdrop-filter: blur(3px);
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+  .drawer {
+    width: 100% !important;
+    max-width: 100%;
+    border-radius: 0;
+    padding: 20px !important;
+  }
+
+  .cart-row img {
+    width: 65px !important;
+    height: 65px !important;
+  }
+}
