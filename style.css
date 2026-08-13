@@ -1989,3 +1989,32 @@ img {
     height: 65px !important;
   }
 }
+/* ===== CHECKOUT CLICK FIX ===== */
+
+#cartPanel {
+  position: fixed !important;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+}
+
+#cartPanel * {
+  pointer-events: auto !important;
+}
+
+#checkoutBtn {
+  position: relative !important;
+  z-index: 1005 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+#overlay {
+  z-index: 900 !important;
+  pointer-events: auto !important;
+}
+
+#cartPanel button {
+  position: relative;
+  z-index: 1001;
+  pointer-events: auto !important;
+}
