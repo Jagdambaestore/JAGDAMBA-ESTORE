@@ -580,21 +580,71 @@ async function placeOrder() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const cartBtn = $("cartBtn");
-  const closeBtn = $("closeCart");
-  const overlay = $("overlay");
-  const checkoutBtn = $("checkoutBtn");
-  const searchBox = $("search");
 
-  if (cartBtn) cartBtn.onclick = openCart;
-  if (closeBtn) closeBtn.onclick = closeCart;
-  if (overlay) overlay.onclick = closeCart;
-  if (checkoutBtn) checkoutBtn.onclick = openCheckout;
+  const cartBtn = document.getElementById("cartBtn");
+  const closeBtn = document.getElementById("closeCart");
+  const overlay = document.getElementById("overlay");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const searchBox = document.getElementById("search");
 
-  if (searchBox) {
-    searchBox.addEventListener("input", renderProducts);
+  console.log("Jagdamba E-Store JS Loaded");
+
+  // CART
+  if (cartBtn) {
+    cartBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCart();
+    });
   }
 
+  // CLOSE CART
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeCart();
+    });
+  }
+
+  // OVERLAY
+  if (overlay) {
+    overlay.addEventListener("click", function () {
+      closeCart();
+    });
+  }
+
+  // CHECKOUT
+  if (checkoutBtn) {
+
+    checkoutBtn.disabled = false;
+
+    checkoutBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      console.log("CHECKOUT BUTTON CLICKED");
+
+      if (cart.length === 0) {
+        alert("Cart is empty.");
+        return;
+      }
+
+      openCheckout();
+    });
+
+  } else {
+    console.error("ERROR: #checkoutBtn not found in HTML");
+  }
+
+  // SEARCH
+  if (searchBox) {
+    searchBox.addEventListener("input", function () {
+      renderProducts();
+    });
+  }
+
+  // LOAD
   loadData();
   renderCart();
 });
