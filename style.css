@@ -2018,3 +2018,29 @@ img {
   z-index: 1001;
   pointer-events: auto !important;
 }
+/* ===== CHECKOUT BUTTON FINAL FIX ===== */
+
+.checkout-click-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 52px;
+
+  cursor: pointer !important;
+  user-select: none;
+
+  position: relative !important;
+  z-index: 99999 !important;
+
+  pointer-events: auto !important;
+}
+
+.checkout-click-btn:hover {
+  transform: translateY(-2px);
+}
+
+.checkout-click-btn:active {
+  transform: translateY(0);
+}
