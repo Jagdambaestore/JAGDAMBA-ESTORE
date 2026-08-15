@@ -1316,31 +1316,13 @@ function openCheckout() {
 
 async function placeOrder() {
 
-  const name =
-    $("coName").value.trim();
-
-  const mobile =
-    $("coMobile").value.trim();
-
-  const address =
-    $("coAddress").value.trim();
-
-  const city =
-    $("coCity").value.trim();
-
-  const state =
-    $("coState").value.trim();
-
-  const pincode =
-    $("coPincode").value.trim();
-
-  const msg =
-    $("checkoutMsg");
-
-
-  /* -------------------------------------------------------
-     VALIDATION
-  ------------------------------------------------------- */
+  const name = $("coName").value.trim();
+  const mobile = $("coMobile").value.trim();
+  const address = $("coAddress").value.trim();
+  const city = $("coCity").value.trim();
+  const state = $("coState").value.trim();
+  const pincode = $("coPincode").value.trim();
+  const msg = $("checkoutMsg");
 
   if (
     !name ||
@@ -1350,13 +1332,355 @@ async function placeOrder() {
     !state ||
     !/^\d{6}$/.test(pincode)
   ) {
-
     msg.textContent =
       "Name, valid 10-digit mobile, address, city, state aur 6-digit pincode bharna zaroori hai.";
+    return;
+  }
+
+
+  const selectedPayment =
+    document.querySelector(
+      'input[name="paymentMethod"]:checked'
+    );
+
+  const paymentMethod =
+    selectedPayment
+      ? selectedPayment.value
+      : "COD";
+
+
+  const t = totals();
+
+
+  if (!cart.length) {
+    msg.textContent = "Cart is empty.";
+    return;
+  }
+
+
+  /* =========================================
+     CHECK CURRENT STOCK BEFORE ORDER
+  ========================================= */
+
+  msg.textContent =
+    "Stock check ho raha hai...";
+
+
+  const productIds =
+    cart.map(item => Number(item.id));
+
+
+  const {
+    data: latestProducts,
+    error: stockError
+  } = await db
+    .from("products")
+    .select("id,name,stock,is_active")
+    .in("id", productIds);
+
+
+  if (stockError) {
+
+    console.error(stockError);
+
+    msg.textContent =
+      "Stock check failed: " +
+      stockError.message;
 
     return;
+  }
+
+
+  for (const item of cart) {
+
+    const latest =
+      latestProducts.find(
+        p => Number(p.id) === Number(item.id)
+      );
+
+
+    if (!latest) {
+
+      msg.textContent =
+        `${item.name} ab available nahi hai.`;
+
+      return;
+    }
+
+
+    if (!latest.is_active) {
+
+      msg.textContent =
+        `${item.name} currently unavailable hai.`;
+
+      return;
+    }
+
+
+    const availableStock =
+      Number(latest.stock || 0);
+
+
+    const requestedQty =
+      Number(item.qty || 0);
+
+
+    if (availableStock < requestedQty) {
+
+      msg.textContent =
+        `${item.name}: Available stock ${availableStock}, requested ${requestedQty}.`;
+
+      alert(
+        `${item.name}\n\nAvailable stock: ${availableStock}\nRequested: ${requestedQty}`
+      );
+
+      return;
+    }
 
   }
+
+
+  /* =========================================
+     CREATE ORDER
+  ========================================= */
+
+  const orderNo =
+    "JDS-" +
+    Date.now()
+      .toString()
+      .slice(-8);
+
+
+  msg.textContent =
+    "Order place ho raha hai...";
+
+
+  const {
+    data: order,
+    error
+  } = await db
+    .from("orders")
+    .insert({
+
+      order_number: orderNo,
+
+      customer_name: name,
+
+      customer_mobile: mobile,
+
+      address: address,
+
+      city: city,
+
+      state: state,
+
+      pincode: pincode,
+
+      payment_method: paymentMethod,
+
+      payment_status:
+        paymentMethod === "UPI"
+          ? "Paid"
+          : "Pending",
+
+      order_status: "New",
+
+      subtotal: t.subtotal,
+
+      delivery_charge: t.delivery,
+
+      total_amount: t.total
+
+    })
+    .select("id,order_number")
+    .single();
+
+
+  if (error) {
+
+    console.error(error);
+
+    msg.textContent =
+      "Order create nahi hua: " +
+      error.message;
+
+    return;
+  }
+
+
+  /* =========================================
+     CREATE ORDER ITEMS
+     DATABASE TRIGGER WILL REDUCE STOCK
+  ========================================= */
+
+  const items =
+    cart.map(item => {
+
+      const price =
+        Number(
+          item.discount_price ??
+          item.price ??
+          0
+        );
+
+
+      return {
+
+        order_id: order.id,
+
+        product_id: item.id,
+
+        product_name: item.name,
+
+        price: price,
+
+        quantity: Number(item.qty),
+
+        total:
+          price *
+          Number(item.qty)
+
+      };
+
+    });
+
+
+  const {
+    error: itemError
+  } = await db
+    .from("order_items")
+    .insert(items);
+
+
+  /* =========================================
+     IF STOCK / ITEM INSERT FAILED
+  ========================================= */
+
+  if (itemError) {
+
+    console.error(
+      "Order items error:",
+      itemError
+    );
+
+
+    // Delete incomplete order
+    await db
+      .from("orders")
+      .delete()
+      .eq("id", order.id);
+
+
+    msg.textContent =
+      itemError.message
+        .includes("Insufficient stock")
+        ? "Stock available nahi hai. Please cart quantity check karein."
+        : itemError.message;
+
+
+    return;
+  }
+
+
+  /* =========================================
+     SUCCESS
+  ========================================= */
+
+  cart = [];
+
+
+  renderCart();
+
+
+  // Latest stock/product data reload
+  await loadData();
+
+
+  const modal =
+    $("checkoutModal");
+
+
+  if (!modal) return;
+
+
+  modal
+    .querySelector(".checkout-box")
+    .innerHTML = `
+
+      <div class="success-order">
+
+        <div class="success-icon">
+          🎉
+        </div>
+
+        <span class="eyebrow">
+          ORDER CONFIRMED
+        </span>
+
+        <h2>
+          Order Placed Successfully
+        </h2>
+
+        <p style="color:#6f7789">
+          Your Order Number
+        </p>
+
+        <div class="order-number">
+          ${escapeHtml(order.order_number)}
+        </div>
+
+        <p>
+          Payment:
+          <b>
+            ${
+              paymentMethod === "UPI"
+                ? "UPI"
+                : "Cash on Delivery"
+            }
+          </b>
+        </p>
+
+        <p
+          style="
+            color:#6f7789;
+            font-size:12px
+          "
+        >
+          Stock automatically update ho gaya hai.
+        </p>
+
+        <p
+          style="
+            color:#6f7789;
+            font-size:12px
+          "
+        >
+          Order details admin panel mein save ho gaye hain.
+        </p>
+
+        <button
+          type="button"
+          id="doneOrder"
+          class="primary"
+          style="margin-top:10px"
+        >
+          Done
+        </button>
+
+      </div>
+
+    `;
+
+
+  $("doneOrder").onclick = () => {
+
+    modal.remove();
+
+    closeCart();
+
+  };
+
+}
 
 
   if (!cart.length) {
