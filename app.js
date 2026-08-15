@@ -48,8 +48,8 @@ function escapeHtml(s) {
 ========================================================= */
 
 function safeUrl(u) {
-  return u && /^https?:\/\//i.test(u)
-    ? u
+  return u && /^https?:\/\//i.test(String(u))
+    ? String(u)
     : "https://placehold.co/600x600?text=Product";
 }
 
@@ -60,7 +60,7 @@ function safeUrl(u) {
 
 function categoryIcon(name = "") {
 
-  const n = name.toLowerCase();
+  const n = String(name).toLowerCase();
 
   if (n.includes("elect")) return "📱";
   if (n.includes("men")) return "👕";
@@ -101,7 +101,10 @@ async function loadData() {
 
     if (p.error) {
 
-      console.error("Products error:", p.error);
+      console.error(
+        "Products error:",
+        p.error
+      );
 
       alert(
         "Products load nahi ho pa rahe: " +
@@ -114,7 +117,10 @@ async function loadData() {
 
     if (c.error) {
 
-      console.error("Categories error:", c.error);
+      console.error(
+        "Categories error:",
+        c.error
+      );
 
       alert(
         "Categories load nahi ho rahi: " +
@@ -146,6 +152,7 @@ async function loadData() {
     );
 
   }
+
 }
 
 
@@ -163,11 +170,23 @@ function renderCategoryShowcase() {
   if (!categories.length) {
 
     box.innerHTML = `
+
       <div class="category-tile">
-        <span class="category-icon">🛍️</span>
-        <h3>All Products</h3>
-        <p>Explore our store</p>
+
+        <span class="category-icon">
+          🛍️
+        </span>
+
+        <h3>
+          All Products
+        </h3>
+
+        <p>
+          Explore our store
+        </p>
+
       </div>
+
     `;
 
     return;
@@ -175,34 +194,39 @@ function renderCategoryShowcase() {
 
 
   box.innerHTML =
-    categories.slice(0, 8).map(c => `
+    categories
+      .slice(0, 8)
+      .map(c => `
 
-      <button
-        class="category-tile"
-        type="button"
-        onclick="
-          filterCategory(${Number(c.id)});
-          document
-            .getElementById('shop')
-            .scrollIntoView({behavior:'smooth'})
-        "
-      >
+        <button
+          class="category-tile"
+          type="button"
+          onclick="
+            filterCategory(${Number(c.id)});
+            document
+              .getElementById('shop')
+              ?.scrollIntoView({
+                behavior:'smooth'
+              })
+          "
+        >
 
-        <span class="category-icon">
-          ${categoryIcon(c.name)}
-        </span>
+          <span class="category-icon">
+            ${categoryIcon(c.name)}
+          </span>
 
-        <h3>
-          ${escapeHtml(c.name)}
-        </h3>
+          <h3>
+            ${escapeHtml(c.name)}
+          </h3>
 
-        <p>
-          Shop now →
-        </p>
+          <p>
+            Shop now →
+          </p>
 
-      </button>
+        </button>
 
-    `).join("");
+      `)
+      .join("");
 
 }
 
@@ -218,35 +242,40 @@ function renderCategories() {
   if (!box) return;
 
 
-  box.innerHTML =
-    `
-      <button
-        class="chip ${!selectedCategory ? "active" : ""}"
-        onclick="filterCategory(null)"
-      >
-        All Products
-      </button>
-    ` +
+  box.innerHTML = `
 
-    categories.map(c =>
+    <button
+      class="chip ${!selectedCategory ? "active" : ""}"
+      type="button"
+      onclick="filterCategory(null)"
+    >
+      All Products
+    </button>
 
-      `
+  ` +
+
+    categories
+      .map(c => `
+
         <button
           class="chip ${
             selectedCategory === c.id
               ? "active"
               : ""
           }"
+          type="button"
           onclick="
             filterCategory(${Number(c.id)})
           "
         >
+
           ${categoryIcon(c.name)}
           ${escapeHtml(c.name)}
-        </button>
-      `
 
-    ).join("");
+        </button>
+
+      `)
+      .join("");
 
 }
 
@@ -280,36 +309,39 @@ function renderProducts() {
 
   const q =
     searchBox
-      ? searchBox.value.toLowerCase().trim()
+      ? searchBox.value
+          .toLowerCase()
+          .trim()
       : "";
 
 
-  const list = products.filter((p) => {
+  const list =
+    products.filter((p) => {
 
-    const name =
-      String(p.name || "")
-        .toLowerCase();
+      const name =
+        String(p.name || "")
+          .toLowerCase();
 
-    const description =
-      String(p.description || "")
-        .toLowerCase();
+      const description =
+        String(p.description || "")
+          .toLowerCase();
 
 
-    return (
+      return (
 
-      (!selectedCategory ||
-        Number(p.category_id) ===
-        Number(selectedCategory))
+        (!selectedCategory ||
+          Number(p.category_id) ===
+          Number(selectedCategory))
 
-      &&
+        &&
 
-      (!q ||
-        name.includes(q) ||
-        description.includes(q))
+        (!q ||
+          name.includes(q) ||
+          description.includes(q))
 
-    );
+      );
 
-  });
+    });
 
 
   if (emptyBox) {
@@ -328,11 +360,14 @@ function renderProducts() {
       const price =
         Number(
           p.discount_price ??
-          p.price
+          p.price ??
+          0
         );
+
 
       const original =
         Number(p.price || 0);
+
 
       const stock =
         Number(p.stock || 0);
@@ -343,13 +378,16 @@ function renderProducts() {
 
       if (
         p.discount_price != null &&
-        original > price
+        original > price &&
+        original > 0
       ) {
 
         discount =
           Math.round(
-            ((original - price) /
-              original) * 100
+            (
+              (original - price) /
+              original
+            ) * 100
           );
 
       }
@@ -365,9 +403,11 @@ function renderProducts() {
               src="${safeUrl(p.image_url)}"
               alt="${escapeHtml(p.name)}"
               onerror="
-                this.src='https://placehold.co/600x600?text=Product'
+                this.onerror=null;
+                this.src='https://placehold.co/600x600?text=Product';
               "
             >
+
 
             <span
               class="
@@ -375,11 +415,13 @@ function renderProducts() {
                 ${stock <= 0 ? "out" : ""}
               "
             >
+
               ${
                 stock > 0
                   ? "IN STOCK"
                   : "SOLD OUT"
               }
+
             </span>
 
 
@@ -399,8 +441,13 @@ function renderProducts() {
           <div class="card-body">
 
             <div class="rating">
+
               ★★★★★
-              <span>Popular choice</span>
+
+              <span>
+                Popular choice
+              </span>
+
             </div>
 
 
@@ -426,12 +473,15 @@ function renderProducts() {
               ₹${money(price)}
 
               ${
-                p.discount_price != null
+                p.discount_price != null &&
+                original > price
+
                   ? `
                     <span class="old">
                       ₹${money(original)}
                     </span>
                   `
+
                   : ""
               }
 
@@ -441,8 +491,10 @@ function renderProducts() {
             <div class="product-meta">
 
               <span>
+
                 🚚 Delivery:
                 ₹${money(p.delivery_charge)}
+
               </span>
 
 
@@ -468,11 +520,15 @@ function renderProducts() {
 
 
             <button
-              ${stock <= 0 ? "disabled" : ""}
+              ${
+                stock <= 0
+                  ? "disabled"
+                  : ""
+              }
+              type="button"
               onclick="
                 addToCart(${Number(p.id)})
               "
-              type="button"
             >
 
               ${
@@ -502,13 +558,17 @@ function addToCart(id) {
 
   const p =
     products.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
 
 
   if (!p) {
 
-    alert("Product not found.");
+    alert(
+      "Product not found."
+    );
 
     return;
   }
@@ -530,7 +590,9 @@ function addToCart(id) {
 
   const row =
     cart.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
 
 
@@ -571,7 +633,9 @@ function changeQty(id, change) {
 
   const row =
     cart.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
 
 
@@ -582,14 +646,16 @@ function changeQty(id, change) {
     Number(row.stock || 0);
 
 
-  row.qty += change;
+  row.qty += Number(change);
 
 
   if (row.qty <= 0) {
 
     cart =
       cart.filter(
-        x => Number(x.id) !== Number(id)
+        x =>
+          Number(x.id) !==
+          Number(id)
       );
 
   }
@@ -618,8 +684,11 @@ function removeFromCart(id) {
 
   cart =
     cart.filter(
-      x => Number(x.id) !== Number(id)
+      x =>
+        Number(x.id) !==
+        Number(id)
     );
+
 
   renderCart();
 
@@ -646,16 +715,18 @@ function totals() {
       );
 
 
-    subtotal +=
-      price *
+    const qty =
       Number(item.qty || 0);
+
+
+    subtotal +=
+      price * qty;
 
 
     delivery +=
       Number(
         item.delivery_charge || 0
-      ) *
-      Number(item.qty || 0);
+      ) * qty;
 
   });
 
@@ -692,7 +763,8 @@ function renderCart() {
   const count =
     cart.reduce(
       (sum, item) =>
-        sum + Number(item.qty || 0),
+        sum +
+        Number(item.qty || 0),
       0
     );
 
@@ -701,7 +773,7 @@ function renderCart() {
     countBox.textContent = count;
 
 
-  if (cart.length === 0) {
+  if (!cart.length) {
 
     box.innerHTML = `
 
@@ -736,7 +808,8 @@ function renderCart() {
 
 
     if (totalBox)
-      totalBox.textContent = "0.00";
+      totalBox.textContent =
+        "0.00";
 
 
     if (checkoutBtn)
@@ -786,7 +859,9 @@ function renderCart() {
 
 
             <div style="margin-top:4px">
+
               ₹${money(price)}
+
             </div>
 
 
@@ -854,8 +929,10 @@ function renderCart() {
                 font-size:11px
               "
             >
+
               Item total:
               ₹${money(itemTotal)}
+
             </div>
 
           </div>
@@ -867,7 +944,8 @@ function renderCart() {
     }).join("");
 
 
-  const t = totals();
+  const t =
+    totals();
 
 
   if (totalBox)
@@ -890,7 +968,9 @@ function openCart() {
   if (panel) {
 
     panel.classList.add("open");
-    panel.style.right = "0";
+
+    panel.style.right =
+      "0";
 
   }
 
@@ -898,7 +978,9 @@ function openCart() {
   if (overlay) {
 
     overlay.classList.add("show");
-    overlay.style.display = "block";
+
+    overlay.style.display =
+      "block";
 
   }
 
@@ -923,7 +1005,9 @@ function closeCart() {
   if (panel) {
 
     panel.classList.remove("open");
-    panel.style.right = "-470px";
+
+    panel.style.right =
+      "-470px";
 
   }
 
@@ -931,7 +1015,9 @@ function closeCart() {
   if (overlay) {
 
     overlay.classList.remove("show");
-    overlay.style.display = "none";
+
+    overlay.style.display =
+      "none";
 
   }
 
@@ -949,15 +1035,17 @@ function closeCart() {
 
 function openCheckout() {
 
-  if (cart.length === 0) {
+  if (!cart.length) {
 
-    alert("Cart is empty.");
+    alert(
+      "Cart is empty."
+    );
 
     return;
   }
 
 
-  let old =
+  const old =
     $("checkoutModal");
 
 
@@ -969,19 +1057,19 @@ function openCheckout() {
     totals();
 
 
-  old =
+  const modal =
     document.createElement("div");
 
 
-  old.id =
+  modal.id =
     "checkoutModal";
 
 
-  old.className =
+  modal.className =
     "checkout-modal";
 
 
-  old.innerHTML = `
+  modal.innerHTML = `
 
     <div class="checkout-box">
 
@@ -1206,17 +1294,13 @@ function openCheckout() {
   `;
 
 
-  document.body.appendChild(old);
+  document.body.appendChild(
+    modal
+  );
 
 
   $("closeCheckout").onclick =
-    () => old.remove();
-
-
-  const paymentRadios =
-    document.querySelectorAll(
-      'input[name="paymentMethod"]'
-    );
+    () => modal.remove();
 
 
   const upiBox =
@@ -1227,15 +1311,21 @@ function openCheckout() {
     $("placeOrder");
 
 
-  paymentRadios.forEach(
-    radio => {
+  document
+    .querySelectorAll(
+      'input[name="paymentMethod"]'
+    )
+    .forEach(radio => {
 
       radio.addEventListener(
         "change",
         () => {
 
+          if (!radio.checked)
+            return;
+
+
           if (
-            radio.checked &&
             radio.value === "UPI"
           ) {
 
@@ -1245,13 +1335,7 @@ function openCheckout() {
             placeBtn.textContent =
               "PAYMENT DONE — PLACE ORDER";
 
-          }
-
-
-          if (
-            radio.checked &&
-            radio.value === "COD"
-          ) {
+          } else {
 
             upiBox.style.display =
               "none";
@@ -1264,35 +1348,39 @@ function openCheckout() {
         }
       );
 
-    }
-  );
+    });
 
 
   $("copyCheckoutUPI").onclick =
-    () => {
+    async () => {
 
       const upi =
         "anshul88266@okhdfcbank";
 
 
-      if (navigator.clipboard) {
+      try {
 
-        navigator.clipboard
-          .writeText(upi)
+        if (
+          navigator.clipboard
+        ) {
 
-          .then(() =>
-            alert(
-              "UPI ID copied successfully!"
-            )
-          )
+          await navigator
+            .clipboard
+            .writeText(upi);
 
-          .catch(() =>
-            alert(
-              "UPI ID: " + upi
-            )
+          alert(
+            "UPI ID copied successfully!"
           );
 
-      } else {
+        } else {
+
+          alert(
+            "UPI ID: " + upi
+          );
+
+        }
+
+      } catch {
 
         alert(
           "UPI ID: " + upi
@@ -1303,7 +1391,7 @@ function openCheckout() {
     };
 
 
-  $("placeOrder").onclick =
+  placeBtn.onclick =
     placeOrder;
 
 }
@@ -1311,18 +1399,65 @@ function openCheckout() {
 
 /* =========================================================
    PLACE ORDER
-   NEW: DATABASE TRANSACTION + AUTO STOCK REDUCTION
+   ONLY ONE METHOD
+   USES create_store_order RPC
+
+   RPC SHOULD:
+   1. Validate stock
+   2. Lock/check stock
+   3. Create order
+   4. Create order_items
+   5. Reduce products.stock
+   6. Rollback if any step fails
 ========================================================= */
 
 async function placeOrder() {
 
-  const name = $("coName").value.trim();
-  const mobile = $("coMobile").value.trim();
-  const address = $("coAddress").value.trim();
-  const city = $("coCity").value.trim();
-  const state = $("coState").value.trim();
-  const pincode = $("coPincode").value.trim();
-  const msg = $("checkoutMsg");
+  const msg =
+    $("checkoutMsg");
+
+
+  const placeBtn =
+    $("placeOrder");
+
+
+  if (!msg)
+    return;
+
+
+  const name =
+    $("coName")?.value.trim() ||
+    "";
+
+
+  const mobile =
+    $("coMobile")?.value.trim() ||
+    "";
+
+
+  const address =
+    $("coAddress")?.value.trim() ||
+    "";
+
+
+  const city =
+    $("coCity")?.value.trim() ||
+    "";
+
+
+  const state =
+    $("coState")?.value.trim() ||
+    "";
+
+
+  const pincode =
+    $("coPincode")?.value.trim() ||
+    "";
+
+
+  /* =======================================================
+     VALIDATION
+  ======================================================= */
 
   if (
     !name ||
@@ -1332,355 +1467,13 @@ async function placeOrder() {
     !state ||
     !/^\d{6}$/.test(pincode)
   ) {
+
     msg.textContent =
       "Name, valid 10-digit mobile, address, city, state aur 6-digit pincode bharna zaroori hai.";
-    return;
-  }
-
-
-  const selectedPayment =
-    document.querySelector(
-      'input[name="paymentMethod"]:checked'
-    );
-
-  const paymentMethod =
-    selectedPayment
-      ? selectedPayment.value
-      : "COD";
-
-
-  const t = totals();
-
-
-  if (!cart.length) {
-    msg.textContent = "Cart is empty.";
-    return;
-  }
-
-
-  /* =========================================
-     CHECK CURRENT STOCK BEFORE ORDER
-  ========================================= */
-
-  msg.textContent =
-    "Stock check ho raha hai...";
-
-
-  const productIds =
-    cart.map(item => Number(item.id));
-
-
-  const {
-    data: latestProducts,
-    error: stockError
-  } = await db
-    .from("products")
-    .select("id,name,stock,is_active")
-    .in("id", productIds);
-
-
-  if (stockError) {
-
-    console.error(stockError);
-
-    msg.textContent =
-      "Stock check failed: " +
-      stockError.message;
 
     return;
-  }
-
-
-  for (const item of cart) {
-
-    const latest =
-      latestProducts.find(
-        p => Number(p.id) === Number(item.id)
-      );
-
-
-    if (!latest) {
-
-      msg.textContent =
-        `${item.name} ab available nahi hai.`;
-
-      return;
-    }
-
-
-    if (!latest.is_active) {
-
-      msg.textContent =
-        `${item.name} currently unavailable hai.`;
-
-      return;
-    }
-
-
-    const availableStock =
-      Number(latest.stock || 0);
-
-
-    const requestedQty =
-      Number(item.qty || 0);
-
-
-    if (availableStock < requestedQty) {
-
-      msg.textContent =
-        `${item.name}: Available stock ${availableStock}, requested ${requestedQty}.`;
-
-      alert(
-        `${item.name}\n\nAvailable stock: ${availableStock}\nRequested: ${requestedQty}`
-      );
-
-      return;
-    }
 
   }
-
-
-  /* =========================================
-     CREATE ORDER
-  ========================================= */
-
-  const orderNo =
-    "JDS-" +
-    Date.now()
-      .toString()
-      .slice(-8);
-
-
-  msg.textContent =
-    "Order place ho raha hai...";
-
-
-  const {
-    data: order,
-    error
-  } = await db
-    .from("orders")
-    .insert({
-
-      order_number: orderNo,
-
-      customer_name: name,
-
-      customer_mobile: mobile,
-
-      address: address,
-
-      city: city,
-
-      state: state,
-
-      pincode: pincode,
-
-      payment_method: paymentMethod,
-
-      payment_status:
-        paymentMethod === "UPI"
-          ? "Paid"
-          : "Pending",
-
-      order_status: "New",
-
-      subtotal: t.subtotal,
-
-      delivery_charge: t.delivery,
-
-      total_amount: t.total
-
-    })
-    .select("id,order_number")
-    .single();
-
-
-  if (error) {
-
-    console.error(error);
-
-    msg.textContent =
-      "Order create nahi hua: " +
-      error.message;
-
-    return;
-  }
-
-
-  /* =========================================
-     CREATE ORDER ITEMS
-     DATABASE TRIGGER WILL REDUCE STOCK
-  ========================================= */
-
-  const items =
-    cart.map(item => {
-
-      const price =
-        Number(
-          item.discount_price ??
-          item.price ??
-          0
-        );
-
-
-      return {
-
-        order_id: order.id,
-
-        product_id: item.id,
-
-        product_name: item.name,
-
-        price: price,
-
-        quantity: Number(item.qty),
-
-        total:
-          price *
-          Number(item.qty)
-
-      };
-
-    });
-
-
-  const {
-    error: itemError
-  } = await db
-    .from("order_items")
-    .insert(items);
-
-
-  /* =========================================
-     IF STOCK / ITEM INSERT FAILED
-  ========================================= */
-
-  if (itemError) {
-
-    console.error(
-      "Order items error:",
-      itemError
-    );
-
-
-    // Delete incomplete order
-    await db
-      .from("orders")
-      .delete()
-      .eq("id", order.id);
-
-
-    msg.textContent =
-      itemError.message
-        .includes("Insufficient stock")
-        ? "Stock available nahi hai. Please cart quantity check karein."
-        : itemError.message;
-
-
-    return;
-  }
-
-
-  /* =========================================
-     SUCCESS
-  ========================================= */
-
-  cart = [];
-
-
-  renderCart();
-
-
-  // Latest stock/product data reload
-  await loadData();
-
-
-  const modal =
-    $("checkoutModal");
-
-
-  if (!modal) return;
-
-
-  modal
-    .querySelector(".checkout-box")
-    .innerHTML = `
-
-      <div class="success-order">
-
-        <div class="success-icon">
-          🎉
-        </div>
-
-        <span class="eyebrow">
-          ORDER CONFIRMED
-        </span>
-
-        <h2>
-          Order Placed Successfully
-        </h2>
-
-        <p style="color:#6f7789">
-          Your Order Number
-        </p>
-
-        <div class="order-number">
-          ${escapeHtml(order.order_number)}
-        </div>
-
-        <p>
-          Payment:
-          <b>
-            ${
-              paymentMethod === "UPI"
-                ? "UPI"
-                : "Cash on Delivery"
-            }
-          </b>
-        </p>
-
-        <p
-          style="
-            color:#6f7789;
-            font-size:12px
-          "
-        >
-          Stock automatically update ho gaya hai.
-        </p>
-
-        <p
-          style="
-            color:#6f7789;
-            font-size:12px
-          "
-        >
-          Order details admin panel mein save ho gaye hain.
-        </p>
-
-        <button
-          type="button"
-          id="doneOrder"
-          class="primary"
-          style="margin-top:10px"
-        >
-          Done
-        </button>
-
-      </div>
-
-    `;
-
-
-  $("doneOrder").onclick = () => {
-
-    modal.remove();
-
-    closeCart();
-
-  };
-
-}
 
 
   if (!cart.length) {
@@ -1700,14 +1493,76 @@ async function placeOrder() {
 
 
   const paymentMethod =
-    selectedPayment
-      ? selectedPayment.value
-      : "COD";
+    selectedPayment?.value ||
+    "COD";
 
 
   const t =
     totals();
 
+
+  /* =======================================================
+     PREPARE ORDER ITEMS
+  ======================================================= */
+
+  const items =
+    cart.map(item => {
+
+      const price =
+        Number(
+          item.discount_price ??
+          item.price ??
+          0
+        );
+
+
+      const quantity =
+        Number(
+          item.qty || 0
+        );
+
+
+      return {
+
+        product_id:
+          Number(item.id),
+
+        product_name:
+          String(item.name || ""),
+
+        price:
+          price,
+
+        quantity:
+          quantity,
+
+        total:
+          price * quantity
+
+      };
+
+    });
+
+
+  if (
+    !items.length ||
+    items.some(
+      item =>
+        item.quantity <= 0
+    )
+  ) {
+
+    msg.textContent =
+      "Invalid cart quantity.";
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     ORDER NUMBER
+  ======================================================= */
 
   const orderNo =
     "JDS-" +
@@ -1716,72 +1571,35 @@ async function placeOrder() {
       .slice(-8);
 
 
+  /* =======================================================
+     DISABLE BUTTON
+  ======================================================= */
+
+  placeBtn.disabled =
+    true;
+
+
   msg.textContent =
     "Order place ho raha hai...";
 
 
-  const placeBtn =
-    $("placeOrder");
-
-
-  if (placeBtn) {
-
-    placeBtn.disabled = true;
-
-  }
-
-
-  /* -------------------------------------------------------
-     PREPARE ITEMS
-  ------------------------------------------------------- */
-
-  const items =
-    cart.map(x => {
-
-      const price =
-        Number(
-          x.discount_price ??
-          x.price ??
-          0
-        );
-
-
-      return {
-
-        product_id:
-          Number(x.id),
-
-        product_name:
-          x.name,
-
-        price:
-
-          price,
-
-        quantity:
-          Number(x.qty),
-
-        total:
-          price *
-          Number(x.qty)
-
-      };
-
-    });
-
-
   try {
 
-    /* -----------------------------------------------------
+    /* =====================================================
+       SUPABASE RPC
+
        IMPORTANT:
+       Browser direct orders/order_items insert nahi karta.
 
-       One RPC call creates:
-       1. Order
-       2. Order items
-       3. Automatic stock reduction
+       create_store_order RPC database ke andar:
+       - stock check
+       - stock lock
+       - order create
+       - order items create
+       - stock reduction
 
-       Everything is inside one database transaction.
-    ----------------------------------------------------- */
+       sab transaction mein karta hai.
+    ===================================================== */
 
     const {
       data,
@@ -1835,12 +1653,17 @@ async function placeOrder() {
     );
 
 
+    /* =====================================================
+       RPC ERROR
+    ===================================================== */
+
     if (error) {
 
       console.error(
-        "CREATE ORDER ERROR:",
+        "create_store_order RPC error:",
         error
       );
+
 
       throw new Error(
         error.message ||
@@ -1850,10 +1673,17 @@ async function placeOrder() {
     }
 
 
-    if (
-      !data ||
-      !data.length
-    ) {
+    /* =====================================================
+       RPC RESPONSE
+    ===================================================== */
+
+    const order =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    if (!order) {
 
       throw new Error(
         "Order response nahi mila."
@@ -1862,13 +1692,14 @@ async function placeOrder() {
     }
 
 
-    const order =
-      data[0];
+    const finalOrderNumber =
+      order.order_number ||
+      orderNo;
 
 
-    /* -----------------------------------------------------
-       SUCCESS
-    ----------------------------------------------------- */
+    /* =====================================================
+       CLEAR CART
+    ===================================================== */
 
     cart = [];
 
@@ -1876,111 +1707,133 @@ async function placeOrder() {
     renderCart();
 
 
-    /*
-      Refresh product stock from database
-      so website immediately shows new stock.
-    */
+    /* =====================================================
+       REFRESH PRODUCTS
+
+       Database se latest stock load hoga.
+    ===================================================== */
 
     await loadData();
 
+
+    /* =====================================================
+       SUCCESS SCREEN
+    ===================================================== */
 
     const modal =
       $("checkoutModal");
 
 
-    if (!modal) return;
+    if (!modal)
+      return;
 
 
-    modal
-      .querySelector(
+    const checkoutBox =
+      modal.querySelector(
         ".checkout-box"
-      )
-      .innerHTML = `
-
-        <div class="success-order">
-
-          <div class="success-icon">
-            🎉
-          </div>
+      );
 
 
-          <span class="eyebrow">
-            ORDER CONFIRMED
-          </span>
+    if (!checkoutBox)
+      return;
 
 
-          <h2>
-            Order Placed Successfully
-          </h2>
+    checkoutBox.innerHTML = `
+
+      <div class="success-order">
+
+        <div class="success-icon">
+          🎉
+        </div>
 
 
-          <p
-            style="
-              color:#6f7789
-            "
-          >
-            Your Order Number
-          </p>
+        <span class="eyebrow">
+          ORDER CONFIRMED
+        </span>
 
 
-          <div class="order-number">
-
-            ${escapeHtml(
-              order.order_number
-            )}
-
-          </div>
+        <h2>
+          Order Placed Successfully
+        </h2>
 
 
-          <p>
-
-            Payment:
-
-            <b>
-              ${
-                paymentMethod === "UPI"
-                  ? "UPI"
-                  : "Cash on Delivery"
-              }
-            </b>
-
-          </p>
+        <p
+          style="
+            color:#6f7789
+          "
+        >
+          Your Order Number
+        </p>
 
 
-          <p
-            style="
-              color:#6f7789;
-              font-size:12px
-            "
-          >
+        <div class="order-number">
 
-            Order details admin panel
-            mein save ho gaye hain.
-
-            <br>
-
-            Stock automatically update
-            ho gaya hai.
-
-          </p>
-
-
-          <button
-            type="button"
-            id="doneOrder"
-            class="primary"
-            style="margin-top:10px"
-          >
-            Done
-          </button>
+          ${escapeHtml(
+            finalOrderNumber
+          )}
 
         </div>
 
-      `;
+
+        <p>
+
+          Payment:
+
+          <b>
+
+            ${
+              paymentMethod === "UPI"
+                ? "UPI"
+                : "Cash on Delivery"
+            }
+
+          </b>
+
+        </p>
+
+
+        <p
+          style="
+            color:#6f7789;
+            font-size:12px
+          "
+        >
+
+          Order details admin panel
+          mein save ho gaye hain.
+
+          <br>
+
+          Stock automatically update
+          ho gaya hai.
+
+        </p>
+
+
+        <button
+          type="button"
+          id="doneOrder"
+          class="primary"
+          style="
+            margin-top:10px
+          "
+        >
+          Done
+        </button>
+
+      </div>
+
+    `;
 
 
     $("doneOrder").onclick =
-      () => modal.remove();
+      () => {
+
+        modal.remove();
+
+        closeCart();
+
+      };
 
 
   } catch (error) {
@@ -1991,26 +1844,23 @@ async function placeOrder() {
     );
 
 
-    msg.textContent =
-      error.message ||
+    const errorText =
+      error?.message ||
       "Order place nahi ho paaya.";
+
+
+    msg.textContent =
+      errorText;
 
 
     alert(
       "Order place nahi hua:\n\n" +
-      (
-        error.message ||
-        "Please try again."
-      )
+      errorText
     );
 
 
-    if (placeBtn) {
-
-      placeBtn.disabled =
-        false;
-
-    }
+    placeBtn.disabled =
+      false;
 
   }
 
@@ -2023,36 +1873,26 @@ async function placeOrder() {
 
 document.addEventListener(
   "DOMContentLoaded",
-  function () {
+  () => {
 
     const cartBtn =
-      document.getElementById(
-        "cartBtn"
-      );
+      $("cartBtn");
 
 
     const closeBtn =
-      document.getElementById(
-        "closeCart"
-      );
+      $("closeCart");
 
 
     const overlay =
-      document.getElementById(
-        "overlay"
-      );
+      $("overlay");
 
 
     const checkoutBtn =
-      document.getElementById(
-        "checkoutBtn"
-      );
+      $("checkoutBtn");
 
 
     const searchBox =
-      document.getElementById(
-        "search"
-      );
+      $("search");
 
 
     console.log(
@@ -2060,17 +1900,18 @@ document.addEventListener(
     );
 
 
-    /* -----------------------------------------------------
-       CART
-    ----------------------------------------------------- */
+    /* =====================================================
+       CART BUTTON
+    ===================================================== */
 
     if (cartBtn) {
 
       cartBtn.addEventListener(
         "click",
-        function (e) {
+        (e) => {
 
           e.preventDefault();
+
           e.stopPropagation();
 
           openCart();
@@ -2081,17 +1922,18 @@ document.addEventListener(
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        CLOSE CART
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (closeBtn) {
 
       closeBtn.addEventListener(
         "click",
-        function (e) {
+        (e) => {
 
           e.preventDefault();
+
           e.stopPropagation();
 
           closeCart();
@@ -2102,51 +1944,37 @@ document.addEventListener(
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        OVERLAY
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (overlay) {
 
       overlay.addEventListener(
         "click",
-        function () {
-
-          closeCart();
-
-        }
+        closeCart
       );
 
     }
 
 
-    /* -----------------------------------------------------
-       CHECKOUT
-    ----------------------------------------------------- */
+    /* =====================================================
+       CHECKOUT BUTTON
+    ===================================================== */
 
     if (checkoutBtn) {
 
       checkoutBtn.disabled =
-        false;
+        true;
 
 
       checkoutBtn.addEventListener(
         "click",
-        function (e) {
+        (e) => {
 
           e.preventDefault();
+
           e.stopPropagation();
-
-
-          console.log(
-            "CHECKOUT BUTTON CLICKED"
-          );
-
-
-          console.log(
-            "Cart:",
-            cart
-          );
 
 
           if (!cart.length) {
@@ -2182,6 +2010,7 @@ document.addEventListener(
         }
       );
 
+
     } else {
 
       console.error(
@@ -2191,27 +2020,23 @@ document.addEventListener(
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        SEARCH
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (searchBox) {
 
       searchBox.addEventListener(
         "input",
-        function () {
-
-          renderProducts();
-
-        }
+        renderProducts
       );
 
     }
 
 
-    /* -----------------------------------------------------
-       LOAD DATA
-    ----------------------------------------------------- */
+    /* =====================================================
+       INITIAL LOAD
+    ===================================================== */
 
     loadData();
 
