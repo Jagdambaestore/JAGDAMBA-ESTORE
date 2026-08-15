@@ -2044,3 +2044,44 @@ img {
 .checkout-click-btn:active {
   transform: translateY(0);
 }
+/* =====================================================
+   FINAL CART / CHECKOUT CLICK FIX
+   ===================================================== */
+
+#overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998 !important;
+}
+
+#cartPanel {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+#cartPanel.open {
+  right: 0 !important;
+}
+
+#cartPanel #checkoutBtn {
+  position: relative !important;
+  z-index: 10001 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  min-height: 52px !important;
+
+  pointer-events: auto !important;
+  cursor: pointer !important;
+
+  opacity: 1 !important;
+}
+
+#cartPanel #checkoutBtn:disabled {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
