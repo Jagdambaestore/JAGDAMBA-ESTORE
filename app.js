@@ -598,27 +598,3 @@ document.addEventListener("DOMContentLoaded", function () {
   loadData();
   renderCart();
 });
-/* ===== CHECKOUT BUTTON CLICK FIX ===== */
-
-document.addEventListener("click", function (event) {
-
-  const checkoutButton = event.target.closest("#checkoutBtn");
-
-  if (!checkoutButton) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  if (checkoutButton.disabled) {
-    alert("Cart is empty.");
-    return;
-  }
-
-  if (typeof openCheckout === "function") {
-    openCheckout();
-  } else {
-    alert("Checkout system load nahi hua. Please refresh the page.");
-    console.error("openCheckout function not found");
-  }
-
-}, true);
