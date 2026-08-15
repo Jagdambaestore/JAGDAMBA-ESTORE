@@ -622,23 +622,3 @@ document.addEventListener("click", function (event) {
   }
 
 }, true);
-/* ===== FINAL CHECKOUT CLICK HANDLER ===== */
-/* ===== FINAL CHECKOUT BUTTON ===== */
-
-document.addEventListener("click", function (event) {
-
-  const button = event.target.closest("#checkoutBtn");
-
-  if (!button) return;
-
-  event.preventDefault();
-
-  if (cart.length === 0) {
-    alert("Cart is empty.");
-    return;
-  }
-
-  openCheckout();
-
-});
-
