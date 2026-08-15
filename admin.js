@@ -1165,10 +1165,46 @@ JAGDAMBA E-STORE`;
   window.open(url, "_blank");
 };
 // =========================
-// REALTIME ORDER UPDATES
+// REALTIME + AUTO REFRESH
 // =========================
 
-db
+let ordersChannel = null;
+let ordersRefreshing = false;
+
+async function refreshDashboardOrders() {
+
+  // Ek time par multiple requests na chalein
+  if (ordersRefreshing) return;
+
+  ordersRefreshing = true;
+
+  try {
+
+    await loadOrders();
+
+    console.log("Dashboard updated automatically.");
+
+  } catch (error) {
+
+    console.error(
+      "Dashboard auto refresh error:",
+      error
+    );
+
+  } finally {
+
+    ordersRefreshing = false;
+
+  }
+
+}
+
+
+// =========================
+// SUPABASE REALTIME
+// =========================
+
+ordersChannel = db
   .channel("admin-orders-live")
   .on(
     "postgres_changes",
@@ -1179,12 +1215,45 @@ db
     },
     async payload => {
 
-      console.log("Order changed:", payload);
+      console.log(
+        "REALTIME ORDER CHANGE:",
+        payload
+      );
 
-      await loadOrders();
+      await refreshDashboardOrders();
 
     }
   )
-  .subscribe();
+  .subscribe(status => {
+
+    console.log(
+      "Orders realtime status:",
+      status
+    );
+
+  });
+
+
+// =========================
+// AUTO REFRESH EVERY 10 SEC
+// =========================
+
+setInterval(() => {
+
+  // Sirf jab admin panel logged-in/open ho
+  if (!$("panel")) return;
+
+  if (!$("panel").classList.contains("hidden")) {
+
+    refreshDashboardOrders();
+
+  }
+
+}, 10000);
+
+
+// =========================
+// START ADMIN
+// =========================
 
 check();
