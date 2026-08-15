@@ -619,19 +619,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     checkoutBtn.disabled = false;
 
-    checkoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
+   checkoutBtn.addEventListener("click", function (e) {
+  e.preventDefault();
+  e.stopPropagation();
 
-      console.log("CHECKOUT BUTTON CLICKED");
+  console.log("CHECKOUT BUTTON CLICKED");
+  console.log("Cart:", cart);
 
-      if (cart.length === 0) {
-        alert("Cart is empty.");
-        return;
-      }
+  if (cart.length === 0) {
+    alert("Cart is empty.");
+    return;
+  }
 
-      openCheckout();
-    });
+  try {
+    console.log("Calling openCheckout()...");
+
+    openCheckout();
+
+    console.log(
+      "Checkout modal:",
+      document.getElementById("checkoutModal")
+    );
+
+  } catch (error) {
+    console.error("CHECKOUT ERROR:", error);
+    alert("Checkout error: " + error.message);
+  }
+});
 
   } else {
     console.error("ERROR: #checkoutBtn not found in HTML");
