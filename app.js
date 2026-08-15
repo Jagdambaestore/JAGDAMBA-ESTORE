@@ -624,17 +624,4 @@ document.addEventListener("click", function (event) {
 }, true);
 /* ===== FINAL CHECKOUT CLICK HANDLER ===== */
 
-document.addEventListener("click", function (event) {
 
-  const btn = event.target.closest("#checkoutBtn");
-
-  if (!btn) return;
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  console.log("CHECKOUT BUTTON CLICKED");
-
-  openCheckout();
-
-}, true);
