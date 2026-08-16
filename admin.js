@@ -1310,7 +1310,64 @@ async function loadOrders() {
 
 
  orders = data || [];
+// =========================
+// ORDER FILTERS
+// =========================
 
+function filterOrders() {
+
+  const search =
+    ($("orderSearch")?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const orderStatus =
+    ($("orderStatusFilter")?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const paymentStatus =
+    ($("paymentStatusFilter")?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const filteredOrders =
+    orders.filter(order => {
+
+      const searchText =
+        [
+          order.order_number,
+          order.customer_name,
+          order.customer_mobile
+        ]
+          .map(x => String(x || "").toLowerCase())
+          .join(" ");
+
+      const matchesSearch =
+        !search || searchText.includes(search);
+
+      const matchesOrderStatus =
+        !orderStatus ||
+        String(order.order_status || "")
+          .trim()
+          .toLowerCase() === orderStatus;
+
+      const matchesPaymentStatus =
+        !paymentStatus ||
+        String(order.payment_status || "Pending")
+          .trim()
+          .toLowerCase() === paymentStatus;
+
+      return (
+        matchesSearch &&
+        matchesOrderStatus &&
+        matchesPaymentStatus
+      );
+
+    });
+
+  renderOrders(filteredOrders);
+}
 updateDashboardSummary();
 updateSalesAnalytics();
 
@@ -1332,8 +1389,8 @@ updateSalesAnalytics();
     .add("hidden");
 
 
-  box.innerHTML =
-    orders.map(order => `
+ box.innerHTML =
+  filteredOrders.map(order => `
 
       <article
         class="card"
