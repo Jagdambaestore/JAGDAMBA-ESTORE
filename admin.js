@@ -801,6 +801,475 @@ function updateDashboardSummary() {
       lowStockProducts;
 
 }
+/* =========================
+   SALES ANALYTICS
+========================= */
+
+function updateSalesAnalytics() {
+
+  const normalize = value =>
+    String(value || "")
+      .trim()
+      .toLowerCase();
+
+
+  const validSalesOrders =
+    orders.filter(o =>
+      normalize(o.order_status) !== "cancelled"
+    );
+
+
+  /* =========================
+     DATE HELPERS
+  ========================= */
+
+  const dateOnly = date => {
+
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+
+  };
+
+
+  const today =
+    dateOnly(new Date());
+
+
+  const yesterday =
+    new Date(today);
+
+  yesterday.setDate(
+    yesterday.getDate() - 1
+  );
+
+
+  /* =========================
+     TODAY
+  ========================= */
+
+  const todaySales =
+    validSalesOrders
+      .filter(o => {
+
+        if (!o.created_at)
+          return false;
+
+        const d =
+          dateOnly(
+            new Date(o.created_at)
+          );
+
+        return (
+          d.getTime() ===
+          today.getTime()
+        );
+
+      })
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     YESTERDAY
+  ========================= */
+
+  const yesterdaySales =
+    validSalesOrders
+      .filter(o => {
+
+        if (!o.created_at)
+          return false;
+
+        const d =
+          dateOnly(
+            new Date(o.created_at)
+          );
+
+        return (
+          d.getTime() ===
+          yesterday.getTime()
+        );
+
+      })
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     THIS WEEK
+  ========================= */
+
+  const weekStart =
+    new Date(today);
+
+  const day =
+    weekStart.getDay();
+
+  const diff =
+    day === 0
+      ? 6
+      : day - 1;
+
+  weekStart.setDate(
+    weekStart.getDate() - diff
+  );
+
+
+  const weekSales =
+    validSalesOrders
+      .filter(o => {
+
+        if (!o.created_at)
+          return false;
+
+        const d =
+          dateOnly(
+            new Date(o.created_at)
+          );
+
+        return d >= weekStart;
+
+      })
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     THIS MONTH
+  ========================= */
+
+  const monthStart =
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
+
+
+  const monthSales =
+    validSalesOrders
+      .filter(o => {
+
+        if (!o.created_at)
+          return false;
+
+        const d =
+          dateOnly(
+            new Date(o.created_at)
+          );
+
+        return d >= monthStart;
+
+      })
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     ALL TIME
+  ========================= */
+
+  const allTimeSales =
+    validSalesOrders.reduce(
+      (sum, o) =>
+        sum + Number(o.total_amount || 0),
+      0
+    );
+
+
+  /* =========================
+     DELIVERED SALES
+  ========================= */
+
+  const deliveredSales =
+    orders
+      .filter(o =>
+        normalize(o.order_status) ===
+        "delivered"
+      )
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     CANCELLED SALES
+  ========================= */
+
+  const cancelledSales =
+    orders
+      .filter(o =>
+        normalize(o.order_status) ===
+        "cancelled"
+      )
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     UPDATE CARDS
+  ========================= */
+
+  if ($("analyticsToday"))
+    $("analyticsToday").textContent =
+      "₹" + money(todaySales);
+
+
+  if ($("analyticsYesterday"))
+    $("analyticsYesterday").textContent =
+      "₹" + money(yesterdaySales);
+
+
+  if ($("analyticsWeek"))
+    $("analyticsWeek").textContent =
+      "₹" + money(weekSales);
+
+
+  if ($("analyticsMonth"))
+    $("analyticsMonth").textContent =
+      "₹" + money(monthSales);
+
+
+  if ($("analyticsAllTime"))
+    $("analyticsAllTime").textContent =
+      "₹" + money(allTimeSales);
+
+
+  if ($("analyticsDelivered"))
+    $("analyticsDelivered").textContent =
+      "₹" + money(deliveredSales);
+
+
+  if ($("analyticsCancelled"))
+    $("analyticsCancelled").textContent =
+      "₹" + money(cancelledSales);
+
+
+  /* =========================
+     LAST 7 DAYS CHART
+  ========================= */
+
+  renderSalesChart();
+
+}
+
+
+/* =========================
+   LAST 7 DAYS SALES CHART
+========================= */
+
+function renderSalesChart() {
+
+  const chart =
+    $("salesChart");
+
+  if (!chart)
+    return;
+
+
+  const today =
+    new Date();
+
+
+  const days = [];
+
+
+  for (
+    let i = 6;
+    i >= 0;
+    i--
+  ) {
+
+    const date =
+      new Date(today);
+
+    date.setHours(
+      0, 0, 0, 0
+    );
+
+    date.setDate(
+      date.getDate() - i
+    );
+
+
+    days.push(date);
+
+  }
+
+
+  const values =
+    days.map(date => {
+
+      return orders
+        .filter(o => {
+
+          if (
+            String(o.order_status || "")
+              .trim()
+              .toLowerCase() ===
+            "cancelled"
+          ) {
+            return false;
+          }
+
+
+          if (!o.created_at)
+            return false;
+
+
+          const d =
+            new Date(o.created_at);
+
+
+          return (
+            d.getDate() ===
+              date.getDate() &&
+
+            d.getMonth() ===
+              date.getMonth() &&
+
+            d.getFullYear() ===
+              date.getFullYear()
+          );
+
+        })
+        .reduce(
+          (sum, o) =>
+            sum +
+            Number(
+              o.total_amount || 0
+            ),
+          0
+        );
+
+    });
+
+
+  const max =
+    Math.max(
+      ...values,
+      1
+    );
+
+
+  chart.innerHTML =
+    days.map(
+      (date, index) => {
+
+        const value =
+          values[index];
+
+
+        const height =
+          Math.max(
+            8,
+            (value / max) * 160
+          );
+
+
+        const label =
+          date.toLocaleDateString(
+            "en-IN",
+            {
+              day: "2-digit",
+              month: "short"
+            }
+          );
+
+
+        return `
+
+          <div
+            style="
+              min-width:70px;
+              flex:1;
+              height:190px;
+              display:flex;
+              flex-direction:column;
+              justify-content:flex-end;
+              align-items:center;
+            "
+          >
+
+            <div
+              style="
+                font-size:11px;
+                font-weight:700;
+                margin-bottom:6px;
+              "
+            >
+              ₹${money(value)}
+            </div>
+
+
+            <div
+              title="₹${money(value)}"
+              style="
+                width:42px;
+                height:${height}px;
+                background:linear-gradient(
+                  180deg,
+                  #7c4dff,
+                  #4c2bbf
+                );
+                border-radius:8px 8px 3px 3px;
+                transition:height .3s;
+              "
+            ></div>
+
+
+            <div
+              style="
+                font-size:10px;
+                margin-top:7px;
+                color:#6f7789;
+                white-space:nowrap;
+              "
+            >
+              ${label}
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* =========================
+   REFRESH ANALYTICS
+========================= */
+
+if ($("refreshAnalytics")) {
+
+  $("refreshAnalytics").onclick =
+    updateSalesAnalytics;
+
+}
+
 async function loadOrders() {
 
   const box =
