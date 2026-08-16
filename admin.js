@@ -932,55 +932,619 @@ updateDashboardSummary();
    VIEW ORDER ITEMS
 ========================= */
 
-window.viewOrder = async orderId => {
+/* =========================================================
+   ORDER DETAILS + PRINTABLE INVOICE
+========================================================= */
 
-  const { data, error } =
-    await db
-      .from("order_items")
-      .select("*")
-      .eq("order_id", orderId);
+window.viewOrder = async function(orderId) {
 
+  const order = orders.find(
+    o => Number(o.id) === Number(orderId)
+  );
+
+  if (!order) {
+    alert("Order details nahi mile.");
+    return;
+  }
+
+  const { data: items, error } = await db
+    .from("order_items")
+    .select("*")
+    .eq("order_id", orderId);
 
   if (error) {
-
-    alert(error.message);
-
+    alert("Order items load nahi hue: " + error.message);
     return;
-
   }
 
-
-  if (!data || !data.length) {
-
+  if (!items || !items.length) {
     alert("Order items nahi mile.");
-
     return;
-
   }
 
+  const subtotal = Number(order.subtotal || 0);
+  const delivery = Number(order.delivery_charge || 0);
+  const total = Number(order.total_amount || 0);
 
-  let text =
-    "ORDER ITEMS\n\n";
+  const paymentMethod =
+    order.payment_method || "-";
+
+  const paymentStatus =
+    order.payment_status || "Pending";
+
+  const orderStatus =
+    order.order_status || "New";
+
+  const itemRows = items.map((item, index) => {
+
+    const qty =
+      Number(item.quantity || 0);
+
+    const price =
+      Number(item.price || 0);
+
+    const itemTotal =
+      Number(
+        item.total ??
+        price * qty
+      );
+
+    return `
+      <tr>
+        <td>${index + 1}</td>
+
+        <td>
+          ${esc(item.product_name || "Product")}
+        </td>
+
+        <td style="text-align:center">
+          ${qty}
+        </td>
+
+        <td style="text-align:right">
+          ₹${money(price)}
+        </td>
+
+        <td style="text-align:right">
+          ₹${money(itemTotal)}
+        </td>
+      </tr>
+    `;
+
+  }).join("");
 
 
-  data.forEach((item, index) => {
+  /* Remove previous modal */
 
-    text +=
-      `${index + 1}. ${item.product_name}\n`;
+  const old =
+    document.getElementById(
+      "orderDetailsModal"
+    );
 
-    text +=
-      `Qty: ${item.quantity}\n`;
-
-    text +=
-      `Price: ₹${money(item.price)}\n`;
-
-    text +=
-      `Total: ₹${money(item.total)}\n\n`;
-
-  });
+  if (old) old.remove();
 
 
-  alert(text);
+  /* Create modal */
+
+  const modal =
+    document.createElement("div");
+
+  modal.id =
+    "orderDetailsModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+    overflow:auto;
+  `;
+
+
+  modal.innerHTML = `
+
+    <div
+      id="invoiceArea"
+      style="
+        width:100%;
+        max-width:850px;
+        background:#fff;
+        border-radius:16px;
+        padding:25px;
+        max-height:95vh;
+        overflow:auto;
+        color:#222;
+      "
+    >
+
+      <!-- HEADER -->
+
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          gap:20px;
+          flex-wrap:wrap;
+          border-bottom:2px solid #222;
+          padding-bottom:18px;
+          margin-bottom:20px;
+        "
+      >
+
+        <div>
+
+          <h1
+            style="
+              margin:0;
+              font-size:28px;
+            "
+          >
+            JAGDAMBA E-STORE
+          </h1>
+
+          <p
+            style="
+              margin:5px 0 0;
+              color:#666;
+            "
+          >
+            Order Invoice
+          </p>
+
+        </div>
+
+
+        <div
+          style="
+            text-align:right;
+          "
+        >
+
+          <b>
+            Order No:
+          </b>
+
+          <br>
+
+          ${esc(order.order_number || "-")}
+
+          <br><br>
+
+          <b>
+            Date:
+          </b>
+
+          <br>
+
+          ${formatDate(order.created_at)}
+
+        </div>
+
+      </div>
+
+
+      <!-- CUSTOMER + STATUS -->
+
+      <div
+        style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(240px,1fr));
+          gap:20px;
+          margin-bottom:25px;
+        "
+      >
+
+        <div
+          style="
+            border:1px solid #ddd;
+            border-radius:10px;
+            padding:15px;
+          "
+        >
+
+          <h3 style="margin-top:0">
+            Customer Details
+          </h3>
+
+          <p>
+            <b>Name:</b>
+            ${esc(order.customer_name || "-")}
+          </p>
+
+          <p>
+            <b>Mobile:</b>
+            ${esc(order.customer_mobile || "-")}
+          </p>
+
+          <p>
+            <b>Address:</b><br>
+            ${esc(order.address || "-")}<br>
+            ${esc(order.city || "")},
+            ${esc(order.state || "")}<br>
+            PIN:
+            ${esc(order.pincode || "-")}
+          </p>
+
+        </div>
+
+
+        <div
+          style="
+            border:1px solid #ddd;
+            border-radius:10px;
+            padding:15px;
+          "
+        >
+
+          <h3 style="margin-top:0">
+            Order Information
+          </h3>
+
+          <p>
+            <b>Payment:</b>
+            ${esc(paymentMethod)}
+          </p>
+
+          <p>
+            <b>Payment Status:</b>
+            ${esc(paymentStatus)}
+          </p>
+
+          <p>
+            <b>Order Status:</b>
+            ${esc(orderStatus)}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCTS -->
+
+      <h3>
+        Order Items
+      </h3>
+
+      <div
+        style="
+          overflow-x:auto;
+        "
+      >
+
+        <table
+          style="
+            width:100%;
+            border-collapse:collapse;
+            margin-bottom:25px;
+          "
+        >
+
+          <thead>
+
+            <tr
+              style="
+                background:#f3f4f6;
+              "
+            >
+
+              <th style="padding:10px;text-align:left">
+                #
+              </th>
+
+              <th style="padding:10px;text-align:left">
+                Product
+              </th>
+
+              <th style="padding:10px;text-align:center">
+                Qty
+              </th>
+
+              <th style="padding:10px;text-align:right">
+                Price
+              </th>
+
+              <th style="padding:10px;text-align:right">
+                Total
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            ${itemRows}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <!-- TOTAL -->
+
+      <div
+        style="
+          max-width:350px;
+          margin-left:auto;
+          border-top:1px solid #ddd;
+          padding-top:10px;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            padding:6px 0;
+          "
+        >
+
+          <span>
+            Subtotal
+          </span>
+
+          <b>
+            ₹${money(subtotal)}
+          </b>
+
+        </div>
+
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            padding:6px 0;
+          "
+        >
+
+          <span>
+            Delivery
+          </span>
+
+          <b>
+            ₹${money(delivery)}
+          </b>
+
+        </div>
+
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            padding:12px 0;
+            border-top:2px solid #222;
+            font-size:20px;
+          "
+        >
+
+          <b>
+            Grand Total
+          </b>
+
+          <b>
+            ₹${money(total)}
+          </b>
+
+        </div>
+
+      </div>
+
+
+      <div
+        style="
+          margin-top:25px;
+          text-align:center;
+          color:#777;
+          font-size:12px;
+        "
+      >
+
+        Thank you for shopping with
+        <b>Jagdamba E-Store</b>.
+
+      </div>
+
+
+      <!-- ACTION BUTTONS -->
+
+      <div
+        class="no-print"
+        style="
+          display:flex;
+          gap:10px;
+          justify-content:center;
+          flex-wrap:wrap;
+          margin-top:25px;
+        "
+      >
+
+        <button
+          type="button"
+          id="printInvoiceBtn"
+          class="primary"
+        >
+          🖨️ Print Invoice
+        </button>
+
+
+        <button
+          type="button"
+          id="invoiceWhatsAppBtn"
+          class="primary"
+        >
+          📱 WhatsApp Customer
+        </button>
+
+
+        <button
+          type="button"
+          id="closeInvoiceBtn"
+          class="chip"
+        >
+          ✕ Close
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  document.body.appendChild(modal);
+
+
+  /* =======================================================
+     CLOSE
+  ======================================================= */
+
+  document
+    .getElementById("closeInvoiceBtn")
+    .onclick = () => {
+
+      modal.remove();
+
+    };
+
+
+  /* =======================================================
+     PRINT
+  ======================================================= */
+
+  document
+    .getElementById("printInvoiceBtn")
+    .onclick = () => {
+
+      const invoice =
+        document.getElementById(
+          "invoiceArea"
+        );
+
+      const printWindow =
+        window.open(
+          "",
+          "_blank",
+          "width=900,height=700"
+        );
+
+      if (!printWindow) {
+
+        alert(
+          "Popup blocked hai. Browser me popup allow karein."
+        );
+
+        return;
+
+      }
+
+
+      printWindow.document.write(`
+
+        <!doctype html>
+
+        <html>
+
+        <head>
+
+          <title>
+            Invoice -
+            ${esc(order.order_number || "")}
+          </title>
+
+          <style>
+
+            * {
+              box-sizing:border-box;
+            }
+
+            body {
+              font-family:Arial,sans-serif;
+              margin:0;
+              padding:25px;
+              color:#222;
+            }
+
+            table {
+              page-break-inside:auto;
+            }
+
+            tr {
+              page-break-inside:avoid;
+              page-break-after:auto;
+            }
+
+            th,
+            td {
+              border:1px solid #ddd;
+              padding:10px;
+            }
+
+            @media print {
+
+              body {
+                padding:0;
+              }
+
+              .no-print {
+                display:none !important;
+              }
+
+            }
+
+          </style>
+
+        </head>
+
+        <body>
+
+          ${invoice.innerHTML}
+
+        </body>
+
+        </html>
+
+      `);
+
+      printWindow.document.close();
+
+      printWindow.focus();
+
+      setTimeout(() => {
+
+        printWindow.print();
+
+      }, 500);
+
+    };
+
+
+  /* =======================================================
+     WHATSAPP
+  ======================================================= */
+
+  document
+    .getElementById("invoiceWhatsAppBtn")
+    .onclick = () => {
+
+      openWhatsApp(
+        order.customer_mobile,
+        order.customer_name,
+        order.order_number,
+        order.order_status || "New"
+      );
+
+    };
 
 };
 
