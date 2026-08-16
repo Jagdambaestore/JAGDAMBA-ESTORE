@@ -1309,8 +1309,10 @@ async function loadOrders() {
   }
 
 
-  orders = data || [];
+ orders = data || [];
+
 updateDashboardSummary();
+updateSalesAnalytics();
 
   if (!orders.length) {
 
