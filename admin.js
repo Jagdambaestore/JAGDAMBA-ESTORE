@@ -586,48 +586,133 @@ function updateDashboardSummary() {
 
   const totalOrders = orders.length;
 
+  const normalize = value =>
+    String(value || "")
+      .trim()
+      .toLowerCase();
+
+
+  /* =========================
+     ORDER STATUS COUNTS
+  ========================= */
+
   const newOrders =
     orders.filter(o =>
-      String(o.order_status || "")
-        .trim()
-        .toLowerCase() === "new"
+      normalize(o.order_status) === "new"
     ).length;
+
 
   const packedOrders =
     orders.filter(o =>
-      String(o.order_status || "")
-        .trim()
-        .toLowerCase() === "packed"
+      normalize(o.order_status) === "packed"
     ).length;
+
 
   const shippedOrders =
     orders.filter(o =>
-      String(o.order_status || "")
-        .trim()
-        .toLowerCase() === "shipped"
+      normalize(o.order_status) === "shipped"
     ).length;
+
 
   const outDeliveryOrders =
     orders.filter(o =>
-      String(o.order_status || "")
-        .trim()
-        .toLowerCase() === "out for delivery"
+      normalize(o.order_status) === "out for delivery"
     ).length;
+
 
   const deliveredOrders =
     orders.filter(o =>
-      String(o.order_status || "")
-        .trim()
-        .toLowerCase() === "delivered"
+      normalize(o.order_status) === "delivered"
     ).length;
 
-  // Cancelled orders ko sales me include nahi karna
+
+  const cancelledOrders =
+    orders.filter(o =>
+      normalize(o.order_status) === "cancelled"
+    ).length;
+
+
+  /* =========================
+     TOTAL SALES
+     Cancelled excluded
+  ========================= */
+
+  const activeOrders =
+    orders.filter(o =>
+      normalize(o.order_status) !== "cancelled"
+    );
+
+
   const totalSales =
+    activeOrders.reduce(
+      (sum, o) =>
+        sum + Number(o.total_amount || 0),
+      0
+    );
+
+
+  /* =========================
+     PENDING PAYMENTS
+  ========================= */
+
+  const pendingPayments =
+    orders.filter(o =>
+      normalize(o.payment_status || "Pending") === "pending"
+    ).length;
+
+
+  /* =========================
+     TODAY'S SALES
+     Cancelled excluded
+  ========================= */
+
+  const now = new Date();
+
+
+  const todaySales =
+    orders
+      .filter(o => {
+
+        if (
+          normalize(o.order_status) ===
+          "cancelled"
+        ) {
+          return false;
+        }
+
+
+        if (!o.created_at) {
+          return false;
+        }
+
+
+        const date =
+          new Date(o.created_at);
+
+
+        return (
+          date.getDate() === now.getDate() &&
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
+
+      })
+      .reduce(
+        (sum, o) =>
+          sum + Number(o.total_amount || 0),
+        0
+      );
+
+
+  /* =========================
+     DELIVERED SALES
+  ========================= */
+
+  const deliveredSales =
     orders
       .filter(o =>
-        String(o.order_status || "")
-          .trim()
-          .toLowerCase() !== "cancelled"
+        normalize(o.order_status) ===
+        "delivered"
       )
       .reduce(
         (sum, o) =>
@@ -635,15 +720,22 @@ function updateDashboardSummary() {
         0
       );
 
-  const pendingPayments =
-    orders.filter(o =>
-      String(o.payment_status || "Pending")
-        .trim()
-        .toLowerCase() === "pending"
+
+  /* =========================
+     LOW STOCK PRODUCTS
+     Stock <= 5
+  ========================= */
+
+  const lowStockProducts =
+    products.filter(p =>
+      Number(p.stock || 0) <= 5 &&
+      Number(p.stock || 0) > 0
     ).length;
 
 
-  // Dashboard counters
+  /* =========================
+     UPDATE DASHBOARD
+  ========================= */
 
   if ($("dashTotalOrders"))
     $("dashTotalOrders").textContent =
@@ -683,6 +775,30 @@ function updateDashboardSummary() {
   if ($("dashPendingPayments"))
     $("dashPendingPayments").textContent =
       pendingPayments;
+
+
+  /* =========================
+     NEW DASHBOARD CARDS
+  ========================= */
+
+  if ($("dashTodaySales"))
+    $("dashTodaySales").textContent =
+      "₹" + money(todaySales);
+
+
+  if ($("dashDeliveredSales"))
+    $("dashDeliveredSales").textContent =
+      "₹" + money(deliveredSales);
+
+
+  if ($("dashCancelledOrders"))
+    $("dashCancelledOrders").textContent =
+      cancelledOrders;
+
+
+  if ($("dashLowStock"))
+    $("dashLowStock").textContent =
+      lowStockProducts;
 
 }
 async function loadOrders() {
