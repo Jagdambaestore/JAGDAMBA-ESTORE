@@ -157,7 +157,124 @@
       margin-bottom:25px;
       flex-wrap:wrap;
     ">
+<!-- =========================
+     SALES ANALYTICS
+========================= -->
 
+<div id="salesAnalytics" style="margin-bottom:30px;">
+
+  <div class="section-head">
+
+    <div>
+      <p class="eyebrow">BUSINESS ANALYTICS</p>
+      <h2>Sales Analytics</h2>
+    </div>
+
+    <button
+      id="refreshAnalytics"
+      class="chip"
+      type="button"
+    >
+      ↻ Refresh Analytics
+    </button>
+
+  </div>
+
+
+  <!-- SALES SUMMARY -->
+
+  <div
+    style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:15px;
+      margin-bottom:20px;
+    "
+  >
+
+    <div class="card">
+      <div class="card-body">
+        <small>Today's Sales</small>
+        <h2 id="analyticsToday">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>Yesterday's Sales</small>
+        <h2 id="analyticsYesterday">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>This Week</small>
+        <h2 id="analyticsWeek">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>This Month</small>
+        <h2 id="analyticsMonth">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>All-Time Sales</small>
+        <h2 id="analyticsAllTime">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>Delivered Sales</small>
+        <h2 id="analyticsDelivered">₹0.00</h2>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="card-body">
+        <small>Cancelled Sales</small>
+        <h2 id="analyticsCancelled">₹0.00</h2>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- LAST 7 DAYS -->
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <h3>📊 Last 7 Days Sales</h3>
+
+      <div
+        id="salesChart"
+        style="
+          display:flex;
+          align-items:flex-end;
+          gap:12px;
+          height:220px;
+          padding:20px 5px 5px;
+          overflow-x:auto;
+        "
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
       <button id="productsTab" class="primary" type="button">
         🛍️ Products
       </button>
