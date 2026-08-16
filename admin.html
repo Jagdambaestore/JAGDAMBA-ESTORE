@@ -428,7 +428,60 @@
         </button>
 
       </div>
+<!-- ORDER SEARCH & FILTER -->
+<div
+  style="
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:10px;
+    margin:20px 0;
+  "
+>
 
+  <input
+    id="orderSearch"
+    class="search"
+    style="width:100%"
+    type="text"
+    placeholder="🔎 Search Order / Name / Mobile"
+  >
+
+  <select
+    id="orderStatusFilter"
+    class="search"
+    style="width:100%"
+  >
+    <option value="">All Order Status</option>
+    <option value="New">New</option>
+    <option value="Confirmed">Confirmed</option>
+    <option value="Packed">Packed</option>
+    <option value="Shipped">Shipped</option>
+    <option value="Out for Delivery">Out for Delivery</option>
+    <option value="Delivered">Delivered</option>
+    <option value="Cancelled">Cancelled</option>
+  </select>
+
+  <select
+    id="paymentStatusFilter"
+    class="search"
+    style="width:100%"
+  >
+    <option value="">All Payment Status</option>
+    <option value="Pending">Pending</option>
+    <option value="Paid">Paid</option>
+    <option value="Failed">Failed</option>
+    <option value="Refunded">Refunded</option>
+  </select>
+
+  <button
+    id="resetOrderFilters"
+    class="chip"
+    type="button"
+  >
+    ↻ Reset Filters
+  </button>
+
+</div>
       <div id="adminOrders"></div>
 
       <p id="ordersEmpty" class="empty hidden">
