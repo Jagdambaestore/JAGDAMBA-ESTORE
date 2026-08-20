@@ -42,36 +42,12 @@ async function loadOrders() {
   ordersBox.innerHTML = "";
   message.textContent = "Orders loading...";
 
-  const { data, error } = await db
-    .from("orders")
-    .select(`
-      id,
-      order_number,
-      customer_name,
-      customer_mobile,
-      customer_phone,
-      address,
-      address_line,
-      city,
-      state,
-      pincode,
-      payment_method,
-      payment_status,
-      order_status,
-      subtotal,
-      delivery_charge,
-      total_amount,
-      created_at,
-      order_items (
-        product_name,
-        product_id,
-        price,
-        product_price,
-        quantity,
-        total
-      )
-    `)
-    .order("created_at", { ascending: false });
+  console.log("Loading orders from Supabase...");
+
+const { data, error } = await db
+  .from("orders")
+  .select("*")
+  .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
