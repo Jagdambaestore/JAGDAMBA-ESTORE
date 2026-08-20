@@ -1310,6 +1310,8 @@ async function loadOrders() {
 
 
  orders = data || [];
+  const filteredOrders = [...orders];
+  updateDashboardSummary();
 // =========================
 // ORDER FILTERS
 // =========================
