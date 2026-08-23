@@ -1561,6 +1561,14 @@ updateSalesAnalytics();
 >
   View Order Items
 </button>
+<button
+  class="primary"
+  type="button"
+  onclick="printInvoice(${order.id})"
+  style="margin-top:10px"
+>
+  🧾 Print A4 Invoice
+</button>
         </div>
 
       </article>
