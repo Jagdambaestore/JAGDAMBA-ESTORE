@@ -2797,10 +2797,11 @@ th {
 
     <div class="logo-box">
 
-      <img
-  src="https://jagdambaestore.github.io/JAGDAMBA-ESTORE/Logo.JPG"
+     <img
+  src="https://raw.githubusercontent.com/Jagdambaestore/JAGDAMBA-ESTORE/main/Logo.JPG"
   class="logo"
-  alt="Jagdamba E-Store"
+  alt=""
+  crossorigin="anonymous"
 >
 
       <div>
