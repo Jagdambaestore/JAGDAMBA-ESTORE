@@ -2798,7 +2798,7 @@ th {
     <div class="logo-box">
 
       <img
-        src="logo.png"
+        src="logo.JPG"
         class="logo"
         alt="Jagdamba E-Store"
       >
