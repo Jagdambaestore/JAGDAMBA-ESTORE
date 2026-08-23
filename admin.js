@@ -2473,5 +2473,522 @@ setInterval(() => {
 // =========================
 // START ADMIN
 // =========================
+/* =========================
+   PRINT A4 INVOICE
+========================= */
 
+window.printInvoice = async function(orderId) {
+
+  const { data: order, error: orderError } =
+    await db
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+  if (orderError || !order) {
+
+    alert(
+      "Order load nahi hua: " +
+      (orderError?.message || "")
+    );
+
+    return;
+  }
+
+
+  const { data: items, error: itemsError } =
+    await db
+      .from("order_items")
+      .select("*")
+      .eq("order_id", orderId);
+
+
+  if (itemsError) {
+
+    alert(
+      "Order items load nahi hue: " +
+      itemsError.message
+    );
+
+    return;
+  }
+
+
+  const invoiceItems = items || [];
+
+
+  const rows = invoiceItems
+    .map((item, index) => {
+
+      const qty =
+        Number(item.quantity || 1);
+
+      const price =
+        Number(
+          item.price ??
+          item.product_price ??
+          0
+        );
+
+      const total =
+        Number(
+          item.total ??
+          price * qty
+        );
+
+      return `
+        <tr>
+          <td>${index + 1}</td>
+
+          <td>
+            ${esc(
+              item.product_name ||
+              "Product"
+            )}
+          </td>
+
+          <td>${qty}</td>
+
+          <td>₹${money(price)}</td>
+
+          <td>₹${money(total)}</td>
+        </tr>
+      `;
+
+    })
+    .join("");
+
+
+  const customerMobile =
+    order.customer_mobile ||
+    order.customer_phone ||
+    "-";
+
+
+  const customerAddress =
+    order.address ||
+    order.address_line ||
+    "";
+
+
+  const subtotal =
+    Number(
+      order.subtotal ||
+      invoiceItems.reduce(
+        (sum, item) =>
+          sum +
+          Number(
+            item.total ??
+            (Number(item.price || 0) *
+             Number(item.quantity || 1))
+          ),
+        0
+      )
+    );
+
+
+  const delivery =
+    Number(order.delivery_charge || 0);
+
+
+  const grandTotal =
+    Number(
+      order.total_amount ||
+      subtotal + delivery
+    );
+
+
+  const invoiceWindow =
+    window.open(
+      "",
+      "_blank",
+      "width=900,height=800"
+    );
+
+
+  if (!invoiceWindow) {
+
+    alert(
+      "Invoice popup blocked hai. Browser me popup allow karein."
+    );
+
+    return;
+  }
+
+
+  invoiceWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>
+Invoice - ${esc(
+  order.order_number || order.id
+)}
+</title>
+
+<style>
+
+* {
+  box-sizing:border-box;
+}
+
+body {
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:0;
+  background:#eee;
+}
+
+.invoice {
+  width:210mm;
+  min-height:297mm;
+  margin:20px auto;
+  background:#fff;
+  padding:18mm;
+  color:#111;
+}
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  border-bottom:2px solid #111;
+  padding-bottom:15px;
+  margin-bottom:20px;
+}
+
+.logo-box {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo {
+  width:70px;
+  height:70px;
+  object-fit:contain;
+}
+
+.store-name {
+  font-size:26px;
+  font-weight:800;
+}
+
+.store-sub {
+  font-size:13px;
+  margin-top:4px;
+}
+
+.invoice-title {
+  text-align:right;
+}
+
+.invoice-title h1 {
+  margin:0;
+  font-size:30px;
+}
+
+.invoice-title p {
+  margin:6px 0;
+  font-size:13px;
+}
+
+.info-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  margin-bottom:25px;
+}
+
+.info-box {
+  border:1px solid #ddd;
+  padding:14px;
+}
+
+.info-box h3 {
+  margin-top:0;
+  font-size:15px;
+}
+
+.info-box p {
+  line-height:1.6;
+  margin:3px 0;
+  font-size:13px;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,
+td {
+  border:1px solid #aaa;
+  padding:10px;
+  text-align:left;
+  font-size:13px;
+}
+
+th {
+  background:#f2f2f2;
+}
+
+.right {
+  text-align:right;
+}
+
+.total-box {
+  width:320px;
+  margin-left:auto;
+  margin-top:25px;
+}
+
+.total-row {
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid #ddd;
+}
+
+.grand-total {
+  font-size:18px;
+  font-weight:bold;
+  border-top:2px solid #111;
+  border-bottom:2px solid #111;
+  margin-top:8px;
+  padding:12px 0;
+}
+
+.footer {
+  margin-top:50px;
+  border-top:1px solid #ddd;
+  padding-top:15px;
+  text-align:center;
+  font-size:12px;
+}
+
+@media print {
+
+  body {
+    background:#fff;
+  }
+
+  .invoice {
+    width:100%;
+    min-height:auto;
+    margin:0;
+    padding:0;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="invoice">
+
+  <div class="header">
+
+    <div class="logo-box">
+
+      <img
+        src="logo.png"
+        class="logo"
+        alt="Jagdamba E-Store"
+      >
+
+      <div>
+
+        <div class="store-name">
+          JAGDAMBA E-STORE
+        </div>
+
+        <div class="store-sub">
+          Online Shopping Store
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="invoice-title">
+
+      <h1>INVOICE</h1>
+
+      <p>
+        <b>Order No:</b>
+        ${esc(order.order_number || order.id)}
+      </p>
+
+      <p>
+        <b>Date:</b>
+        ${formatDate(order.created_at)}
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="info-grid">
+
+    <div class="info-box">
+
+      <h3>Customer Details</h3>
+
+      <p>
+        <b>${esc(order.customer_name || "-")}</b>
+      </p>
+
+      <p>
+        Mobile:
+        ${esc(customerMobile)}
+      </p>
+
+      <p>
+        ${esc(customerAddress)}
+      </p>
+
+      <p>
+        ${esc(order.city || "")},
+        ${esc(order.state || "")}
+      </p>
+
+      <p>
+        PIN:
+        ${esc(order.pincode || "")}
+      </p>
+
+    </div>
+
+
+    <div class="info-box">
+
+      <h3>Payment Details</h3>
+
+      <p>
+        <b>Payment Method:</b>
+        ${esc(order.payment_method || "COD")}
+      </p>
+
+      <p>
+        <b>Payment Status:</b>
+        ${esc(order.payment_status || "Pending")}
+      </p>
+
+      <p>
+        <b>Order Status:</b>
+        ${esc(order.order_status || "New")}
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <table>
+
+    <thead>
+
+      <tr>
+
+        <th>S.No.</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+
+      </tr>
+
+    </thead>
+
+
+    <tbody>
+
+      ${rows}
+
+    </tbody>
+
+  </table>
+
+
+  <div class="total-box">
+
+    <div class="total-row">
+
+      <span>Subtotal</span>
+
+      <span>
+        ₹${money(subtotal)}
+      </span>
+
+    </div>
+
+
+    <div class="total-row">
+
+      <span>Delivery Charge</span>
+
+      <span>
+        ₹${money(delivery)}
+      </span>
+
+    </div>
+
+
+    <div class="total-row grand-total">
+
+      <span>Grand Total</span>
+
+      <span>
+        ₹${money(grandTotal)}
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer">
+
+    <b>Thank you for shopping with Jagdamba E-Store!</b>
+
+    <br><br>
+
+    This is a computer-generated invoice.
+
+  </div>
+
+</div>
+
+
+<script>
+
+window.onload = function() {
+
+  setTimeout(function() {
+
+    window.print();
+
+  }, 500);
+
+};
+
+</script>
+
+</body>
+</html>
+  `);
+
+
+  invoiceWindow.document.close();
+
+};
 check();
