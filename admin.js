@@ -2798,10 +2798,10 @@ th {
     <div class="logo-box">
 
       <img
-        src="logo.png"
-        class="logo"
-        alt="Jagdamba E-Store"
-      >
+  src="https://jagdambaestore.github.io/JAGDAMBA-ESTORE/Logo.JPG"
+  class="logo"
+  alt="Jagdamba E-Store"
+>
 
       <div>
 
