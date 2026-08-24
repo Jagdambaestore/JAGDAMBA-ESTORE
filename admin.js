@@ -2986,30 +2986,73 @@ th {
 
 </div>
 
-<script>
 function downloadInvoicePDF() {
-  const invoice = document.getElementById("invoice");
+
+  const invoice =
+    document.getElementById("invoice");
+
+  if (!invoice) {
+    alert("Invoice not found.");
+    return;
+  }
+
+  if (typeof html2pdf === "undefined") {
+    alert("PDF library loading nahi hui. Please try again.");
+    console.error("html2pdf library not loaded");
+    return;
+  }
+
+  const orderNo =
+    "${esc(order.order_number || order.id)}";
 
   const opt = {
-    margin: 0,
-    filename: "Jagdamba-Invoice.pdf",
+    margin: [5, 5, 5, 5],
+
+    filename:
+      "Jagdamba-Invoice-" +
+      orderNo +
+      ".pdf",
+
     image: {
       type: "jpeg",
       quality: 0.98
     },
+
     html2canvas: {
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      allowTaint: true
     },
+
     jsPDF: {
       unit: "mm",
       format: "a4",
       orientation: "portrait"
+    },
+
+    pagebreak: {
+      mode: [
+        "css",
+        "legacy"
+      ]
     }
   };
 
   html2pdf()
     .set(opt)
     .from(invoice)
-    .save();
+    .save()
+    .catch(function(error) {
+
+      console.error(
+        "PDF download error:",
+        error
+      );
+
+      alert(
+        "PDF download failed. Console check karein."
+      );
+
+    });
+
 }
