@@ -2157,7 +2157,7 @@ window.viewOrder = async function(orderId) {
             }
 
           </style>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         </head>
 
         <body>
@@ -2791,7 +2791,7 @@ th {
 
 <body>
 
-<div class="invoice">
+<div id="invoice" class="invoice">
 
   <div class="header">
 
@@ -2968,20 +2968,53 @@ th {
   </div>
 
 </div>
+<div style="text-align:center; margin:20px 0;">
 
+  <button
+    onclick="downloadInvoicePDF()"
+    style="
+      padding:12px 25px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:bold;
+    "
+  >
+    ⬇ Download Invoice PDF
+  </button>
+
+</div>
 
 <script>
 
-window.onload = function() {
 
-  setTimeout(function() {
+function downloadInvoicePDF() {
+  const invoice = document.getElementById("invoice");
 
-    window.print();
+  const opt = {
+    margin: 0,
+    filename: "Jagdamba-Invoice.pdf",
+    image: {
+      type: "jpeg",
+      quality: 0.98
+    },
+    html2canvas: {
+      scale: 2,
+      useCORS: true
+    },
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait"
+    }
+  };
 
-  }, 500);
-
-};
-
+  html2pdf()
+    .set(opt)
+    .from(invoice)
+    .save();
+}
 </script>
 
 </body>
