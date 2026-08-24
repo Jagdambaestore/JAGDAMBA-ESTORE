@@ -2987,8 +2987,6 @@ th {
 </div>
 
 <script>
-
-
 function downloadInvoicePDF() {
   const invoice = document.getElementById("invoice");
 
@@ -3015,14 +3013,3 @@ function downloadInvoicePDF() {
     .from(invoice)
     .save();
 }
-</script>
-
-</body>
-</html>
-  `);
-
-
-  invoiceWindow.document.close();
-
-};
-check();
