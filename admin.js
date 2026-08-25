@@ -2971,7 +2971,8 @@ th {
 <div style="text-align:center; margin:20px 0;">
 
   <button
-    onclick="downloadInvoicePDF()"
+    type="button"
+    id="downloadPdfBtn"
     style="
       padding:12px 25px;
       border:none;
@@ -2986,7 +2987,11 @@ th {
 
 </div>
 
-function downloadInvoicePDF() {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+
+document.getElementById("downloadPdfBtn").onclick = function() {
 
   const invoice =
     document.getElementById("invoice");
@@ -2998,20 +3003,15 @@ function downloadInvoicePDF() {
 
   if (typeof html2pdf === "undefined") {
     alert("PDF library loading nahi hui. Please try again.");
-    console.error("html2pdf library not loaded");
     return;
   }
 
-  const orderNo =
-    "${esc(order.order_number || order.id)}";
-
   const opt = {
+
     margin: [5, 5, 5, 5],
 
     filename:
-      "Jagdamba-Invoice-" +
-      orderNo +
-      ".pdf",
+      "Jagdamba-Invoice-${esc(order.order_number || order.id)}.pdf",
 
     image: {
       type: "jpeg",
@@ -3028,14 +3028,8 @@ function downloadInvoicePDF() {
       unit: "mm",
       format: "a4",
       orientation: "portrait"
-    },
-
-    pagebreak: {
-      mode: [
-        "css",
-        "legacy"
-      ]
     }
+
   };
 
   html2pdf()
@@ -3044,15 +3038,12 @@ function downloadInvoicePDF() {
     .save()
     .catch(function(error) {
 
-      console.error(
-        "PDF download error:",
-        error
-      );
+      console.error("PDF download error:", error);
 
-      alert(
-        "PDF download failed. Console check karein."
-      );
+      alert("PDF download failed.");
 
     });
 
-}
+};
+
+</script>
