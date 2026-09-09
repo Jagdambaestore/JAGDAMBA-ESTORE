@@ -1,0 +1,91 @@
+/* JAGDAMBA E-STORE AFFILIATE SYSTEM */
+
+.product-image-wrap {
+  position: relative;
+}
+
+.affiliate-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #171b2b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+
+.affiliate-buttons {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.affiliate-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #f1f2f6;
+  color: #171b2b;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.affiliate-btn:hover {
+  transform: translateY(-1px);
+  opacity: .92;
+}
+
+.aff-amazon { background: #f5c242; }
+.aff-flipkart { background: #2874f0; color: #fff; }
+.aff-meesho { background: #e8338b; color: #fff; }
+
+.affiliate-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #6f7789;
+  line-height: 1.45;
+}
+
+.affiliate-admin-box {
+  display: none;
+  margin: 12px 0;
+  padding: 16px;
+  border: 1px solid #e8eaf0;
+  border-radius: 14px;
+  background: #f8f8fc;
+}
+
+.affiliate-admin-box h4 {
+  margin: 0 0 5px;
+}
+
+.admin-field {
+  width: 100%;
+  margin: 5px 0 10px;
+}
+
+.affiliate-admin-list {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: #efedff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.muted {
+  color: #6f7789;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .affiliate-btn {
+    padding: 12px 10px;
+  }
+}
