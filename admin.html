@@ -1,525 +1,418 @@
+```html
 <!doctype html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Jagdamba Admin</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1">
+
+  <title>
+    Jagdamba E-Store — Admin
+  </title>
+
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="affiliate.css">
+
 </head>
+
 
 <body>
 
+
 <header class="topbar">
- <div class="brand" style="
-  display:flex;
-  align-items:center;
-  gap:12px;
-">
 
-  <img
-    src="Logo.JPG"
-    alt="Jagdamba E-Store"
-    style="
-      width:60px;
-      height:60px;
-      object-fit:contain;
-      border-radius:50%;
-      display:block;
-      background:white;
-      flex-shrink:0;
-    "
-  >
-
-  <div>
+  <div class="brand">
     JAGDAMBA
     <span>ADMIN PANEL</span>
   </div>
 
-</div>
-
   <nav>
-    <a href="index.html">Store</a>
-    <button id="logout" class="cart-btn">Logout</button>
+
+    <a href="index.html">
+      Store
+    </a>
+
+    <button
+      id="logout"
+      class="cart-btn">
+      Logout
+    </button>
+
   </nav>
+
 </header>
+
+
 
 <main class="section">
 
-  <!-- LOGIN -->
-  <div id="loginBox" class="card" style="max-width:480px;margin:auto">
-    <div class="card-body">
 
-      <p class="eyebrow">SECURE ADMIN</p>
-      <h2>Admin Login</h2>
+<!-- ================= LOGIN ================= -->
 
-      <input
-        id="email"
-        class="search"
-        style="width:100%;margin:6px 0"
-        type="email"
-        placeholder="Admin email"
-      >
-
-      <input
-        id="password"
-        class="search"
-        style="width:100%;margin:6px 0"
-        type="password"
-        placeholder="Password"
-      >
-
-      <button id="login" class="primary">Login</button>
-
-      <p id="loginMsg"></p>
-
-    </div>
-  </div>
-
-
-  <!-- ADMIN PANEL -->
-  <div id="panel" class="hidden">
-
-    <!-- ADMIN NAV -->
-    <!-- DASHBOARD SUMMARY -->
 <div
-  id="dashboardSummary"
-  style="
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:15px;
-    margin-bottom:25px;
-  "
->
+  id="loginBox"
+  class="card"
+  style="max-width:480px;margin:auto">
 
-  <div class="card">
-    <div class="card-body">
-      <small>Total Orders</small>
-      <h2 id="dashTotalOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>New Orders</small>
-      <h2 id="dashNewOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Packed</small>
-      <h2 id="dashPackedOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Shipped</small>
-      <h2 id="dashShippedOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Out for Delivery</small>
-      <h2 id="dashOutDeliveryOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Delivered</small>
-      <h2 id="dashDeliveredOrders">0</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Total Sales</small>
-      <h2 id="dashTotalSales">₹0.00</h2>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <small>Pending Payments</small>
-      <h2 id="dashPendingPayments">0</h2>
-    </div>
-  </div>
-<div class="card">
   <div class="card-body">
-    <small>Today's Sales</small>
-    <h2 id="dashTodaySales">₹0.00</h2>
+
+    <p class="eyebrow">
+      SECURE ADMIN
+    </p>
+
+    <h2>
+      Admin Login
+    </h2>
+
+
+    <input
+      id="email"
+      class="search"
+      style="width:100%;margin:6px 0"
+      type="email"
+      placeholder="Admin email"
+    >
+
+
+    <input
+      id="password"
+      class="search"
+      style="width:100%;margin:6px 0"
+      type="password"
+      placeholder="Password"
+    >
+
+
+    <button
+      id="login"
+      class="primary"
+      style="margin-top:10px">
+
+      Login
+
+    </button>
+
+
+    <p id="loginMsg"></p>
+
   </div>
+
 </div>
 
-<div class="card">
-  <div class="card-body">
-    <small>Delivered Sales</small>
-    <h2 id="dashDeliveredSales">₹0.00</h2>
-  </div>
-</div>
 
-<div class="card">
-  <div class="card-body">
-    <small>Cancelled Orders</small>
-    <h2 id="dashCancelledOrders">0</h2>
-  </div>
-</div>
 
-<div class="card">
-  <div class="card-body">
-    <small>Low Stock Products</small>
-    <h2 id="dashLowStock">0</h2>
-  </div>
-</div>
-</div>
-    <div style="
-      display:flex;
-      gap:10px;
-      margin-bottom:25px;
-      flex-wrap:wrap;
-    ">
-<!-- =========================
-     SALES ANALYTICS
-========================= -->
+<!-- ================= ADMIN PANEL ================= -->
 
-<div id="salesAnalytics" style="margin-bottom:30px;">
+<div id="panel" class="hidden">
+
 
   <div class="section-head">
 
     <div>
-      <p class="eyebrow">BUSINESS ANALYTICS</p>
-      <h2>Sales Analytics</h2>
+
+      <p class="eyebrow">
+        STORE MANAGEMENT
+      </p>
+
+      <h2>
+        Products
+      </h2>
+
     </div>
 
+
     <button
-      id="refreshAnalytics"
-      class="chip"
-      type="button"
-    >
-      ↻ Refresh Analytics
+      id="newProduct"
+      class="primary">
+
+      + Add Product
+
     </button>
 
   </div>
 
 
-  <!-- SALES SUMMARY -->
 
-  <div
-    style="
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-      gap:15px;
-      margin-bottom:20px;
-    "
-  >
+<!-- ================= PRODUCT FORM ================= -->
 
-    <div class="card">
-      <div class="card-body">
-        <small>Today's Sales</small>
-        <h2 id="analyticsToday">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>Yesterday's Sales</small>
-        <h2 id="analyticsYesterday">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>This Week</small>
-        <h2 id="analyticsWeek">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>This Month</small>
-        <h2 id="analyticsMonth">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>All-Time Sales</small>
-        <h2 id="analyticsAllTime">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>Delivered Sales</small>
-        <h2 id="analyticsDelivered">₹0.00</h2>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <div class="card-body">
-        <small>Cancelled Sales</small>
-        <h2 id="analyticsCancelled">₹0.00</h2>
-      </div>
-    </div>
-
-  </div>
-
-
-  <!-- LAST 7 DAYS -->
-
-  <div class="card">
-
-    <div class="card-body">
-
-      <h3>📊 Last 7 Days Sales</h3>
-
-      <div
-        id="salesChart"
-        style="
-          display:flex;
-          align-items:flex-end;
-          gap:12px;
-          height:220px;
-          padding:20px 5px 5px;
-          overflow-x:auto;
-        "
-      ></div>
-
-    </div>
-
-  </div>
-
-</div>
-      <button id="productsTab" class="primary" type="button">
-        🛍️ Products
-      </button>
-
-      <button id="ordersTab" class="chip" type="button">
-        📦 Orders
-      </button>
-
-    </div>
-
-
-    <!-- PRODUCTS SECTION -->
-    <div id="productsSection">
-
-      <div class="section-head">
-
-        <div>
-          <p class="eyebrow">STORE MANAGEMENT</p>
-          <h2>Products</h2>
-        </div>
-
-        <button id="newProduct" class="primary">
-          + Add Product
-        </button>
-
-      </div>
-
-
-      <!-- PRODUCT FORM -->
-      <div id="formBox" class="card hidden" style="margin:25px 0">
-
-        <div class="card-body">
-
-          <h3 id="formTitle">Add Product</h3>
-
-          <input id="pid" type="hidden">
-
-          <input
-            id="pname"
-            class="search"
-            style="width:100%;margin:5px 0"
-            placeholder="Product name"
-          >
-
-          <textarea
-            id="pdesc"
-            class="search"
-            style="width:100%;height:100px;margin:5px 0"
-            placeholder="Description"
-          ></textarea>
-
-          <label>
-            <b>Product Picture</b>
-          </label>
-
-          <input
-            id="pfile"
-            type="file"
-            accept="image/*"
-            style="width:100%;margin:10px 0"
-          >
-
-          <img
-            id="preview"
-            style="
-              display:none;
-              width:150px;
-              height:150px;
-              object-fit:cover;
-              border-radius:12px
-            "
-          >
-
-          <select
-            id="pcat"
-            class="search"
-            style="width:100%;margin:10px 0"
-          ></select>
-
-          <input
-            id="pprice"
-            class="search"
-            style="width:100%;margin:5px 0"
-            type="number"
-            step="0.01"
-            placeholder="Price"
-          >
-
-          <input
-            id="pdiscount"
-            class="search"
-            style="width:100%;margin:5px 0"
-            type="number"
-            step="0.01"
-            placeholder="Discount price (optional)"
-          >
-
-          <input
-            id="pdelivery"
-            class="search"
-            style="width:100%;margin:5px 0"
-            type="number"
-            step="0.01"
-            value="0"
-            placeholder="Delivery charge"
-          >
-
-          <input
-            id="pstock"
-            class="search"
-            style="width:100%;margin:5px 0"
-            type="number"
-            value="0"
-            placeholder="Stock"
-          >
-
-          <br><br>
-
-          <button id="save" class="primary">
-            Save Product
-          </button>
-
-          <button id="cancel" class="chip">
-            Cancel
-          </button>
-
-          <p id="msg"></p>
-
-        </div>
-      </div>
-
-<div id="lowStockBox" style="margin:25px 0;"></div>
-      <!-- PRODUCTS -->
-      <div id="adminProducts" class="grid"></div>
-
-    </div>
-
-
-    <!-- ORDERS SECTION -->
-    <div id="ordersSection" class="hidden">
-
-      <div class="section-head">
-
-        <div>
-          <p class="eyebrow">STORE MANAGEMENT</p>
-          <h2>Orders</h2>
-        </div>
-
-        <button id="refreshOrders" class="primary" type="button">
-          ↻ Refresh Orders
-        </button>
-
-      </div>
-<!-- ORDER SEARCH & FILTER -->
 <div
-  style="
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:10px;
-    margin:20px 0;
-  "
->
+  id="formBox"
+  class="card hidden"
+  style="margin:25px 0">
 
-  <input
-    id="orderSearch"
-    class="search"
-    style="width:100%"
-    type="text"
-    placeholder="🔎 Search Order / Name / Mobile"
-  >
+  <div class="card-body">
 
-  <select
-    id="orderStatusFilter"
-    class="search"
-    style="width:100%"
-  >
-    <option value="">All Order Status</option>
-    <option value="New">New</option>
-    <option value="Confirmed">Confirmed</option>
-    <option value="Packed">Packed</option>
-    <option value="Shipped">Shipped</option>
-    <option value="Out for Delivery">Out for Delivery</option>
-    <option value="Delivered">Delivered</option>
-    <option value="Cancelled">Cancelled</option>
-  </select>
 
-  <select
-    id="paymentStatusFilter"
-    class="search"
-    style="width:100%"
-  >
-    <option value="">All Payment Status</option>
-    <option value="Pending">Pending</option>
-    <option value="Paid">Paid</option>
-    <option value="Failed">Failed</option>
-    <option value="Refunded">Refunded</option>
-  </select>
+    <h3 id="formTitle">
+      Add Product
+    </h3>
 
-  <button
-    id="resetOrderFilters"
-    class="chip"
-    type="button"
-  >
-    ↻ Reset Filters
-  </button>
 
-</div>
-      <div id="adminOrders"></div>
+    <input
+      type="hidden"
+      id="pid"
+    >
 
-      <p id="ordersEmpty" class="empty hidden">
-        No orders found.
+
+
+    <!-- PRODUCT NAME -->
+
+    <label>
+      Product Name
+    </label>
+
+    <input
+      id="pname"
+      class="search admin-field"
+      placeholder="Product name"
+    >
+
+
+
+    <!-- DESCRIPTION -->
+
+    <label>
+      Description
+    </label>
+
+    <textarea
+      id="pdesc"
+      class="search admin-field"
+      style="height:100px"
+      placeholder="Description"></textarea>
+
+
+
+    <!-- IMAGE -->
+
+    <label>
+      Product Image URL
+    </label>
+
+    <input
+      id="pimage"
+      class="search admin-field"
+      placeholder="https://..."
+    >
+
+
+
+    <!-- CATEGORY -->
+
+    <label>
+      Category
+    </label>
+
+    <select
+      id="pcat"
+      class="search admin-field">
+    </select>
+
+
+
+    <!-- PRODUCT TYPE -->
+
+    <label>
+      Product Type
+    </label>
+
+    <select
+      id="ptype"
+      class="search admin-field">
+
+      <option value="normal">
+        Normal / Own Store Product
+      </option>
+
+      <option value="affiliate">
+        Affiliate Product
+      </option>
+
+    </select>
+
+
+
+    <!-- AFFILIATE LINKS -->
+
+    <div
+      id="affiliateFields"
+      class="affiliate-admin-box">
+
+      <h4>
+        Marketplace Affiliate Links
+      </h4>
+
+      <p class="muted">
+        Yahan sirf apne approved
+        affiliate/deep links paste karein.
       </p>
 
+
+
+      <!-- AMAZON -->
+
+      <label>
+        Amazon Affiliate Link
+      </label>
+
+      <input
+        id="amazonUrl"
+        class="search admin-field"
+        placeholder="https://www.amazon.in/...tag=YOURTAG-21"
+      >
+
+
+
+      <!-- FLIPKART -->
+
+      <label>
+        Flipkart Affiliate / Deep Link
+      </label>
+
+      <input
+        id="flipkartUrl"
+        class="search admin-field"
+        placeholder="https://www.flipkart.com/..."
+      >
+
+
+
+      <!-- MEESHO -->
+
+      <label>
+        Meesho Affiliate Link
+      </label>
+
+      <input
+        id="meeshoUrl"
+        class="search admin-field"
+        placeholder="https://..."
+      >
+
     </div>
 
+
+
+    <!-- PRICE -->
+
+    <label>
+      Price
+    </label>
+
+    <input
+      id="pprice"
+      class="search admin-field"
+      type="number"
+      step="0.01"
+      placeholder="Price"
+    >
+
+
+
+    <!-- DISCOUNT -->
+
+    <label>
+      Discount Price (optional)
+    </label>
+
+    <input
+      id="pdiscount"
+      class="search admin-field"
+      type="number"
+      step="0.01"
+      placeholder="Discount price"
+    >
+
+
+
+    <!-- DELIVERY -->
+
+    <label>
+      Delivery Charge
+    </label>
+
+    <input
+      id="pdelivery"
+      class="search admin-field"
+      type="number"
+      step="0.01"
+      value="0"
+    >
+
+
+
+    <!-- STOCK -->
+
+    <label>
+      Stock
+    </label>
+
+    <input
+      id="pstock"
+      class="search admin-field"
+      type="number"
+      value="0"
+    >
+
+
+    <br><br>
+
+
+    <button
+      id="save"
+      class="primary">
+
+      Save Product
+
+    </button>
+
+
+    <button
+      id="cancel"
+      class="chip">
+
+      Cancel
+
+    </button>
+
+
+    <p id="msg"></p>
+
+
   </div>
+
+</div>
+
+
+
+<!-- PRODUCT LIST -->
+
+<div
+  id="adminProducts"
+  class="grid">
+</div>
+
+
+</div>
 
 </main>
 
 
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ADMIN JAVASCRIPT -->
+
 <script src="admin.js"></script>
 
+
 </body>
+
 </html>
+```
